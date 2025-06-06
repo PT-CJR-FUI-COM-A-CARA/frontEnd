@@ -8,13 +8,13 @@ export default function LoginPage()
 {
   const router = useRouter();
   return (
-    <div className="flex flex-col md:flex-row">
+    <div className="flex flex-col md:flex-row min-h-screen">
       {/* IMAGEM JACARÉ */}
-      <div className="h-screen w-[60%] bg-yellow-100 flex justify-center items-center">
+      <div className="w-full md:w-1/2 bg-yellow-100 flex justify-center items-center">
         <img
           src="logo/jacareLogin.png"
           alt="JacaréLogin"
-          className='w-full h-full object-cover md:object-contain'
+          className='w-full h-full object-contain'
         />
       </div>
 
@@ -24,19 +24,19 @@ export default function LoginPage()
         <img
           src="logo/Logomarca 1.svg"
           alt="Logo"
-          className='w-95'/>
+          className='w-100 mb-6'/>
         
         <form className="w-full max-w-sm space-y-4">
 
           <input
             type="email"
             placeholder="Email"
-            className="w-full p-2 bg-white rounded-xl placeholder-gray-500 text-gray-700"
+            className="h-12 w-full p-2 bg-white rounded-xl placeholder-gray-500 text-gray-700"
           />
           <input
             type="password"
             placeholder="Senha"
-            className="w-full p-2 bg-white rounded-xl placeholder-gray-500 text-gray-700"
+            className="h-12 w-full p-2 bg-white rounded-xl placeholder-gray-500 text-gray-700"
           />
           
           <div className = "w-full flex justify-center mt-8 space-x-20">
