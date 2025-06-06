@@ -19,7 +19,7 @@ export default function LoginPage()
       </div>
 
       {/* FORMULÁRIO P/ LOGIN DO USUÁRIO */}
-      <div className="w-full md:w-1/2 bg-[#EDEDED] flex flex-col justify-center items-center p-8">
+      <div className="w-full md:w-1/2 bg-[#EDEDED] flex flex-col justify-center items-center p-8 min-h-screen">
       
         <img
           src="logo/Logomarca 1.svg"

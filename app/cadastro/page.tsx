@@ -51,7 +51,7 @@ export default function CadastroPage()
       </div>
 
       {/* FORMULÁRIO P/ CADASTRO DO USUÁRIO */}
-      <div className="w-full md:w-1/2 bg-[#EDEDED] flex flex-col justify-center items-center p-8">
+      <div className="w-full md:w-1/2 bg-[#EDEDED] flex flex-col justify-center items-center p-8 min-h-screen">
       
         <img
           src="logo/Logomarca 2.svg"
@@ -65,7 +65,7 @@ export default function CadastroPage()
             placeholder="Nome"
             value = {nome}
             onChange={(e) => setNome(e.target.value)}
-            className="h-12  w-full p-2 bg-white rounded-xl placeholder-gray-500 text-gray-700"
+            className="h-12 w-full p-2 bg-white rounded-xl placeholder-gray-500 text-gray-700"
           />
 
           <input
