@@ -65,7 +65,7 @@ export default function CadastroPage()
             placeholder="Nome"
             value = {nome}
             onChange={(e) => setNome(e.target.value)}
-            className="h-12 w-full p-2 bg-white rounded-xl placeholder-gray-500 text-gray-700"
+            className="h-12  w-full p-2 bg-white rounded-xl placeholder-gray-500 text-gray-700"
           />
 
           <input
