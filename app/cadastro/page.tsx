@@ -17,7 +17,7 @@ export default function CadastroPage()
   const router = useRouter();
   
   const lendoRegister = () => {
-    registerUser(nome, senha, email)
+    registerUser(nome, senha, email, departamento, curso)
   }
 
   const validarSenhaSegura = (senha : string) => {
