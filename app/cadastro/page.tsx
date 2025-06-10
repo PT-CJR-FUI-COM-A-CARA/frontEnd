@@ -3,7 +3,9 @@
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import Botão from '../components/botao_azul/Botao';
+import Popup from '../components/popup/PopUp';
 import { registerUser } from '../utils/api';
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function CadastroPage() 
 {
@@ -14,18 +16,39 @@ export default function CadastroPage()
   const [email, setEmail] = useState('');
   const [curso, setCurso] = useState('');
   const [departamento, setDepartamento] = useState('');
+  const [popupAberto, setPopupAberto] = useState(false);
   const router = useRouter();
+
+  const [senhaVisivel, setSenhaVisivel] = useState(false);
+  const [confirmarSenhaVisivel, setConfirmarSenhaVisivel] = useState(false);
   
-  const lendoRegister = () => {
-    registerUser(nome, senha, email, departamento, curso)
-  }
+  const lendoRegister = async () => {
+    try {
+      await registerUser(nome, email, senha, curso, departamento)
+      setPopupAberto(true);
+      setErro('');
+
+      setTimeout(() => {
+        router.push('/login');
+      }, 3500);
+    
+    } catch (error) {
+      console.error('Erro ao registrar usuário:', error);
+      setErro('Erro ao registrar usuário. Por favor, tente novamente.');
+    }
+  };
 
   const validarSenhaSegura = (senha : string) => {
     const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     return regex.test(senha);
     };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const validarEmail = (email : string) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!validarSenhaSegura(senha)) {
@@ -42,6 +65,13 @@ export default function CadastroPage()
       setErro('Por favor, preencha todos os campos.');
       return;
     }
+
+    if (!validarEmail(email)) {
+      setErro('Por favor, insira um email válido.');
+      return;
+    }
+
+    await lendoRegister();
   }
 
   return (
@@ -113,12 +143,17 @@ export default function CadastroPage()
           />
 
           {erro && <p className="text-red-500 text-sm">{erro}</p>}
+
+          <Popup isOpen={popupAberto} onClose = { () => setPopupAberto(false)}>
+            <div className='flex flex-col items-center'>
+              <h2 className='text-[#050036] font-bold mb-4'>Cadastro realizado com sucesso!</h2>
+              <p className='text-[#050036]'>Redirecionando para o login...</p>
+            </div>
+          </Popup>
           
           <div className = "w-full flex justify-center mt-8 space-x-20">
             <Botão
-              type="submit"
-              onClick={lendoRegister}
-            >
+              type="submit">
               Criar Conta
             </Botão>
 
