@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import Botão from '../components/botao_azul/Botao';
+import { registerUser } from '../utils/api';
 
 export default function CadastroPage() 
 {
@@ -14,6 +15,10 @@ export default function CadastroPage()
   const [curso, setCurso] = useState('');
   const [departamento, setDepartamento] = useState('');
   const router = useRouter();
+  
+  const lendoRegister = () => {
+    registerUser(nome, senha, email)
+  }
 
   const validarSenhaSegura = (senha : string) => {
     const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
@@ -112,11 +117,12 @@ export default function CadastroPage()
           <div className = "w-full flex justify-center mt-8 space-x-20">
             <Botão
               type="submit"
+              onClick={lendoRegister}
             >
               Criar Conta
             </Botão>
 
-            { /* BOTÃO PARA REDIRECIONAR PARA A PÁGINA DE CADASTRO */}
+            { /* BOTÃO PARA REDIRECIONAR PARA A PÁGINA DE LOGIN */}
             <Botão
               onClick={() => router.push('/login')}
             >
