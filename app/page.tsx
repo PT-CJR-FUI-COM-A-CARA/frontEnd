@@ -1,8 +1,14 @@
 import React from 'react'
+import NavBar from './components/navbar/NavBar'
 
 const Home = () => {
   return (
-    <div>Essa página é a do feed</div>
+    <>
+   <NavBar />
+    <div>
+      <p>Essa é a página inicial</p>
+    </div>
+    </>
   )
 }
 
