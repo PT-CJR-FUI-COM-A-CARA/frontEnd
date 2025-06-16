@@ -8,7 +8,7 @@ interface BotaoProps {
 
 const Botão: React.FC<BotaoProps> = ({children, onClick, type}) => {
   return (
-    <button className="min-w-[120px] max-w-[160px] w-full bg-white text-[#050036] text-sm px-7 py-2 rounded-xl hover:scale-110 duration-200 cursor-pointer"
+    <button className="text-xs sm:text-sm md:text-base px-4 sm:px-6 md:px-7 py-1.5 sm:py-2 rounded-xl bg-white text-[#050036] hover:scale-105 transition-transform duration-200 cursor-pointer"
       onClick={onClick}
       type = {type || 'button'}
     >

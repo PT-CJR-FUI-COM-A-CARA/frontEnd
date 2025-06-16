@@ -14,17 +14,19 @@ export default function NavBar({ isLoggedIn = false }) {
 
     return (
     <header>
-        <nav className="h-15 bg-[#050036] text-white p-1">
+        <nav className="bg-[#050036] text-white py-1">
             <div className="container mx-auto flex justify-between items-center">
                 <div className="flex items-center space-x-4 ml-15">
                     <button
                     aria-label="Home"
                     className="p-1 rounded-full hover:scale-105 transition duration-300 cursor-pointer"
-                    > <img src="/logo/Logomarca 3.svg" alt="Logo" className="h-12" />
+                    > <img src="/logo/Logomarca 3.svg" 
+                        alt="Logo" 
+                        className="h-8 sm:h-10 md:h-12 lg:h-14 max-w-[180px] w-auto" />
                     </button>
                 </div>    
                 { isLoggedIn ? (
-                    <ul className="flex space-x-4 mr-15"> 
+                    <ul className="flex space-x-3 sm:space-x-4 mr-15"> 
                         <li> 
                         <button
                         aria-label = "mais"
@@ -62,9 +64,9 @@ export default function NavBar({ isLoggedIn = false }) {
                         </li>
                     </ul>
                 ) : (
-                    <ul className="flex flex-col sm:flex-row gap-2 sm:gap-4 mr-15">
+                    <ul className="flex space-x-3 sm:space-x-4 mr-15">
                         <li
-                        className='flex space-x-3'>
+                        className='flex gap-2 sm:gap-4'>
                             <Botão
                             onClick={() => router.push('/login')}
                             type="button">
