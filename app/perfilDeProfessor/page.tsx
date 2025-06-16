@@ -61,7 +61,7 @@ const PerfilDeProfessor = () => { // Componente renomeado para PerfilDeProfessor
                                 garantir o alinhamento consistente. */}
                             <div className="pl-2"> 
                                 {/* Conteúdo de texto do perfil do professor */}
-                                <div className="pt-24"> {/* Ajustado para pt-24 para espaçamento consistente */}
+                                <div className="pt-15"> {/* Ajustado para pt-24 para espaçamento consistente */}
                                     {/* Nome do Professor */}
                                     <h2 className="text-2xl font-semibold text-[#222E50] mb-2">João Moreira</h2>
                                     
