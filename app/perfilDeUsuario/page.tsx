@@ -3,7 +3,7 @@ import NavBar from '../components/navbar/NavBar';
 import { FaBuilding, FaEnvelope, FaArrowLeft } from 'react-icons/fa'; 
 import PostCard from '../components/post_card/PostCard'; // Importe o componente PostCard, ajuste o caminho se necessário
 
-const PerfilDeUsuario = () => {
+const PerfilDeUsuario = ({ isLoggedIn = false }) => {
     // Dados de exemplo para as publicações
     const posts = [
         {
@@ -54,8 +54,20 @@ const PerfilDeUsuario = () => {
                                 src="https://avatars.githubusercontent.com/u/169405654?v=4" 
                                 alt="Profile Avatar"
                                 className="absolute top-0 left-6 transform -translate-y-1/2 
-                                           w-36 h-36 rounded-full object-cover border-4 border-white shadow-lg"
+                                        w-36 h-36 rounded-full object-cover border-4 border-white shadow-lg"
                             />
+
+                            {/* Botões de Ação no Perfil (Editar e Excluir Perfil) */}
+                            {isLoggedIn && ( // Renderiza os botões apenas se isLoggedIn for true
+                                <div className="absolute top-6 right-6 flex space-x-2">
+                                    <button className="bg-[#222E50] text-white px-4 py-2 rounded-md text-sm font-medium shadow-sm hover:bg-[#1A253E] transition-colors duration-200">
+                                        Editar Perfil
+                                    </button>
+                                    <button className="bg-red-500 text-white px-4 py-2 rounded-md text-sm font-medium shadow-sm hover:bg-red-600 transition-colors duration-200">
+                                        Excluir Perfil
+                                    </button>
+                                </div>
+                            )}
 
                             {/* Este div 'pl-2' agora engloba todo o conteúdo abaixo do avatar para
                                 garantir o alinhamento consistente com o Figma. */}
