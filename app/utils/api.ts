@@ -10,7 +10,6 @@ export const getAllUsers = async() => {
   return response.data
 }
 
-//lembrar de colocar departamento e demais coisas...
 export const registerUser = async(nome:string, email:string, senha:string, curso: string, departamento: string) => {
     try{
             const response = await api.post("/users", {
