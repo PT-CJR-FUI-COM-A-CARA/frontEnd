@@ -5,9 +5,11 @@ import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
 
 interface Professor {
+  id : number;
   name: string;
   area: string;
-  Fotopsrc: string;
+  departamento: string;
+  fotopsrc: string;
 }
 
 interface Props {

@@ -1,7 +1,7 @@
 'use client'
 import React, {ReactNode, MouseEventHandler} from 'react'
 import { useRouter } from 'next/navigation'
-import Botão from '../botao_branco/Botão'
+import Botão from '../botao_branco/Botao_branco'
 
 export default function NavBar({ isLoggedIn = false }) {
 
