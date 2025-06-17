@@ -1,8 +1,58 @@
-import React from 'react'
+'use client';
+import React, { useEffect } from 'react'
+import NavBar from './components/navbar/NavBar'
+import CarrosselProfessores from './components/carrossel/carrossel'
+import DropdownOrdenar from './components/ordenar/ordenar';
+import { useState } from 'react';
 
 const Home = () => {
+
+  type Professor = {
+  id: number;
+  name: string;
+  area: string;
+  departamento: string;
+  fotopsrc: string;
+};
+
+  const [professores, setProfessores] = useState<Professor[]>([]);
+  const [ordenacao, setOrdenacao] = useState<'nome' | 'materia' | 'recentes' | 'antigas'>('recentes');
+
+  useEffect(() => {
+    const fetchProfessores = async () => {
+      const res = await fetch('api/professores');
+      const data = await res.json();
+      setProfessores(data);
+    };
+
+    fetchProfessores();
+  }, []);
+
+  const professoresRecentes = professores.slice(-8); // Ultimos 8 professores
+
+  const professoresOrdenados = [...professores].sort((a, b) => {
+    if (ordenacao === 'nome') return a.name.localeCompare(b.name);
+    if (ordenacao === 'materia') return a.area.localeCompare(b.area);
+    if (ordenacao === 'recentes') return 0; // Manter a ordem original
+    if (ordenacao === 'antigas') return -1; // Inverter a ordem original
+    return 0;
+  });
+
   return (
-    <div>Essa página é a do feed</div>
+  <>
+   <NavBar />
+   <section className='px-15 py-10'>
+    <h2 className="text-3xl font-medium ml-15">Novos Professores</h2>
+    <CarrosselProfessores professores={professoresRecentes} />
+   </section>
+   <section className='px-15 py-10'>
+    <div className='flex justify-between items-center mb-1'>
+      <h2 className="text-3xl font-medium ml-15">Todos os Professores</h2>
+       <DropdownOrdenar ordenacao={ordenacao} setOrdenacao={setOrdenacao} />
+    </div>
+    <CarrosselProfessores professores={professoresOrdenados} />
+   </section>
+  </>
   )
 }
 

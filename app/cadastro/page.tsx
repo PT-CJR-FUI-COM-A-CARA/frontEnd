@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
-import Botão from '../components/botao_azul/Botao';
+import Botão from '../components/botao_azul/Botao_Azul';
 import Popup from '../components/popup/PopUp';
 import { registerUser } from '../utils/api';
 import { FaEye, FaEyeSlash } from "react-icons/fa";
