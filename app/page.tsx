@@ -1,14 +1,34 @@
+'use client';
 import React from 'react'
 import NavBar from './components/navbar/NavBar'
-import ProfQuadro from './components/quadro/Quadro'
+import CarrosselProfessores from './components/carrossel/carrossel'
+import DropdownOrdenar from './components/ordenar/ordenar';
+import { useState } from 'react';
 
 const Home = () => {
 
+  const [ordenacao, setOrdenacao] = useState<'nome' | 'materia' | 'recentes' | 'antigas'>('recentes');
+
   const professores = [
     {
-      name: "Harry Styles",
-      area: "História da Música",
-      Fotopsrc: "/fotos/Harry.webp",
+      name: "Ed Sheeran",
+      area: "Composição",
+      Fotopsrc: "/fotos/Ed.jpg",
+    },
+    {
+      name: "Shawn Mendes",
+      area: "Técnica de Performance",
+      Fotopsrc: "/fotos/Shawn.avif",
+    },
+    {
+      name: "Camila Cabello",
+      area: "Expressão Artística",
+      Fotopsrc: "/fotos/Camila.jpg",
+    },
+    {
+      name: "Beyoncé",
+      area: "Didática",
+      Fotopsrc: "/fotos/Bey.webp",
     },
     {
       name: "Taylor Swift",
@@ -26,49 +46,52 @@ const Home = () => {
       Fotopsrc: "/fotos/Cyrus.jpg",
     },
     {
-      name: "Beyoncé",
-      area: "Didática",
-      Fotopsrc: "/fotos/Bey.webp",
-    },
-    {
       name: "Billie Eilish",
       area: "Técnica Vocal",
       Fotopsrc: "/fotos/Billie.webp",
-    },
-    {
-      name: "Ed Sheeran",
-      area: "Composição",
-      Fotopsrc: "/fotos/Ed.jpg",
     },
     {
       name: "Dua Lipa",
       area: "Produção Musical",
       Fotopsrc: "/fotos/Dua.webp",
     },
+    {
+      name: "Selena Gomez",
+      area: "Marketing Musical",
+      Fotopsrc: "/fotos/Selena.avif",
+    },
+    {
+      name: "Harry Styles",
+      area: "História da Música",
+      Fotopsrc: "/fotos/Harry.webp",
+    },
   ];
 
-  return (
-    <>
-   <NavBar />
-   <section className='bg-gray-100 px-6 py-20'>
-      <h2 className='text-3xl font-bold mb-8 ml-15'>Novos Professores</h2>
-       <div className='flex overflow-x-auto scrollbar-hide'>
-        {professores.map((professor, index) => (
-          <div
-          key = {index}
-          className=' ml-15 w-[180px] h-[180px] md:w-[220px] md:h-[220px] lg:w-[250px] lg:h-[350px]'
-          >
-            <ProfQuadro
-              name={professor.name}
-              area={professor.area}
-              Fotopsrc={professor.Fotopsrc}
-            />
-          </div>
-        ))}
-        </div>
-   </section>
+  const professoresRecentes = professores.slice(-8); // Ultimos 8 professores
 
-    </>
+  const professoresOrdenados = [...professores].sort((a, b) => {
+    if (ordenacao === 'nome') return a.name.localeCompare(b.name);
+    if (ordenacao === 'materia') return a.area.localeCompare(b.area);
+    if (ordenacao === 'recentes') return 0; // Manter a ordem original
+    if (ordenacao === 'antigas') return -1; // Inverter a ordem original
+    return 0; // Caso não seja nenhuma das opções, manter a ordem original
+  });
+
+  return (
+  <>
+   <NavBar />
+   <section className='px-15 py-10'>
+    <h2 className="text-3xl font-medium ml-15">Novos Professores</h2>
+    <CarrosselProfessores professores={professoresRecentes} />
+   </section>
+   <section className='px-15 py-10'>
+    <div className='flex justify-between items-center mb-1'>
+      <h2 className="text-3xl font-medium ml-15">Todos os Professores</h2>
+       <DropdownOrdenar ordenacao={ordenacao} setOrdenacao={setOrdenacao} />
+    </div>
+    <CarrosselProfessores professores={professoresOrdenados} />
+   </section>
+  </>
   )
 }
 
