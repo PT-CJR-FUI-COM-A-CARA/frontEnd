@@ -1,88 +1,118 @@
 'use client'
-import React, {ReactNode, MouseEventHandler} from 'react'
-import { useRouter } from 'next/navigation'
-import Botão from '../botao_branco/Botao_branco'
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Botão from '../botao_branco/Botão';
+import { jwtDecode } from 'jwt-decode';
+import { getOneUser } from '@/app/utils/api'; // ajuste se necessário
 
-export default function NavBar({ isLoggedIn = false }) {
-
+export default function NavBar() {
     const router = useRouter();
 
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [userPhoto, setUserPhoto] = useState<string | null>(null);
+    const [userID, setUserID] = useState<number | null>(null);
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+
+        if (token) {
+            setIsLoggedIn(true);
+            try {
+                const decoded: { sub?: string } = jwtDecode(token);
+                if (decoded.sub) {
+                    const id = Number(decoded.sub);
+                    setUserID(id);
+
+                    getOneUser(id)
+                        .then(user => {
+                            setUserPhoto(user.fotosrc ?? null);
+                        })
+                        .catch(err => console.error("Erro ao buscar foto do usuário:", err));
+                }
+            } catch (error) {
+                console.error("Erro ao decodificar token:", error);
+            }
+        }
+    }, []);
+
     const handleLogout = () => {
-        localStorage.removeItem('token'); // Remove o token do localStorage
-        router.push('/login'); // Redireciona para a página de login
+        localStorage.removeItem('token');
+        setIsLoggedIn(false);
+        router.push('/login');
     }
 
     return (
-    <header>
-        <nav className="bg-[#050036] text-white py-1">
-            <div className="container mx-auto flex justify-between items-center">
-                <div className="flex items-center space-x-4 ml-15">
-                    <button
-                    aria-label="Home"
-                    className="p-1 rounded-full hover:scale-105 transition duration-300 cursor-pointer"
-                    > <img src="/logo/Logomarca 3.svg" 
-                        alt="Logo" 
-                        className="h-8 sm:h-10 md:h-12 lg:h-14 max-w-[180px] w-auto" />
-                    </button>
-                </div>    
-                { isLoggedIn ? (
-                    <ul className="flex space-x-3 sm:space-x-4 mr-15"> 
-                        <li> 
+        <header>
+            <nav className="h-15 bg-[#050036] text-white p-1">
+                <div className="container mx-auto flex justify-between items-center">
+                    <div className="flex items-center space-x-4 ml-15">
                         <button
-                        aria-label = "mais"
-                        className = " p-1 rounded-full hover:scale-110 transition duration-300 cursor-pointer"
-                        > <img src="/icones-nav/Mais_Icon.png" alt = "Mais" className = "h-7" />
-                        </button>  
+                            aria-label="Home"
+                            className="p-1 rounded-full hover:scale-105 transition duration-300 cursor-pointer"
+                            onClick={() => router.push('/')}
+                        >
+                            <img src="/logo/Logomarca 3.svg" alt="Logo" className="h-12" />
+                        </button>
+                    </div>
+
+                    {isLoggedIn ? (
+                        <ul className="flex space-x-4 mr-15">
+                            <li>
+                                <button
+                                    aria-label="mais"
+                                    className="p-1 rounded-full hover:scale-110 transition duration-300 cursor-pointer"
+                                >
+                                    <img src="/icones-nav/Mais_Icon.png" alt="Mais" className="h-7" />
+                                </button>
                             </li>
 
-                        <li>   
-                        <button
-                        aria-label = "notificações"
-                        className = " p-1 rounded-full hover:scale-110 trasition duration-300 cursor-pointer"
-                        > <img src="/icones-nav/Noti_Icon.png" alt = "notificações" className = "h-7" />
-                        </button>
+                            <li>
+                                <button
+                                    aria-label="notificações"
+                                    className="p-1 rounded-full hover:scale-110 transition duration-300 cursor-pointer"
+                                >
+                                    <img src="/icones-nav/Noti_Icon.png" alt="notificações" className="h-7" />
+                                </button>
+                            </li>
 
-                        </li>
+                            <li>
+                                <button
+                                    onClick={() => router.push('/perfilDeUsuario')}
+                                    className="p-1 rounded-full hover:scale-110 transition duration-300 cursor-pointer"
+                                    aria-label="Perfil do usuário"
+                                >
+                                    <img
+                                        src={userPhoto || "/profileSemFoto/profileSemFoto.jpg"}
+                                        alt="Foto do perfil"
+                                        className="h-9 w-9 rounded-full object-cover border border-white shadow-sm"
+                                    />
+                                </button>
+                            </li>
 
-                        <li>   
-                        <button
-                        aria-label = "Icon"
-                        className = " p-1 rounded-full hover:scale-110 trasition duration-300 cursor-pointer"
-                        > <img src="/icones-nav/PH_Icon.png" alt = "Icon" className = "h-7" />
-                        </button>
-
-                        </li>
-
-                        <li>   
-                        <button
-                        aria-label = "Sair"
-                        onClick = {handleLogout}
-                        className = " p-1 rounded-full hover:scale-110 trasition duration-300 cursor-pointer"
-                        > <img src="/icones-nav/Saida_Icon.png" alt = "saida" className = "h-7" />
-                        </button>
-
-                        </li>
-                    </ul>
-                ) : (
-                    <ul className="flex space-x-3 sm:space-x-4 mr-15">
-                        <li
-                        className='flex gap-2 sm:gap-4'>
-                            <Botão
-                            onClick={() => router.push('/login')}
-                            type="button">
-                                Login
-                            </Botão>
-                            <Botão
-                            onClick={() => router.push('/cadastro')}
-                            type="button">
-                                Cadastro
-                            </Botão>
-                        </li>
-                    </ul>
-
-                )}
-            </div>
-        </nav>
-    </header>
+                            <li>
+                                <button
+                                    onClick={handleLogout}
+                                    aria-label="Sair"
+                                    className="p-1 rounded-full hover:scale-110 transition duration-300 cursor-pointer"
+                                >
+                                    <img src="/icones-nav/Saida_Icon.png" alt="Sair" className="h-7" />
+                                </button>
+                            </li>
+                        </ul>
+                    ) : (
+                        <ul className="flex flex-col sm:flex-row gap-2 sm:gap-4 mr-15">
+                            <li className='flex space-x-3'>
+                                <Botão onClick={() => router.push('/login')} type="button">
+                                    Login
+                                </Botão>
+                                <Botão onClick={() => router.push('/cadastro')} type="button">
+                                    Cadastro
+                                </Botão>
+                            </li>
+                        </ul>
+                    )}
+                </div>
+            </nav>
+        </header>
     );
 }
