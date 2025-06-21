@@ -4,7 +4,7 @@ import NavBar from '../components/navbar/NavBar';
 import { FaBuilding, FaEnvelope, FaArrowLeft } from 'react-icons/fa'; 
 import PostCard from '../components/post_card/PostCard';
 import { useRouter } from 'next/navigation';
-import { getOneUser } from '../utils/api';
+import { getOneUser, getAvaliacoesByUser } from '../utils/api';
 import { jwtDecode } from 'jwt-decode';
 
 const PerfilDeUsuario = () => {
@@ -13,6 +13,7 @@ const PerfilDeUsuario = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userID, setUserID] = useState<number | null>(null);
     const [userData, setUserData] = useState<any>(null);
+    const [avaliacoes, setAvaliacoes] = useState<any[]>([]);
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -44,6 +45,21 @@ const PerfilDeUsuario = () => {
         };
 
         fetchUser();
+    }, [userID]);
+
+    useEffect(() => {
+        const fetchAvaliacoes = async () => {
+            if (userID) {
+                try {
+                    const avaliacoesDoUsuario = await getAvaliacoesByUser(userID);
+                    setAvaliacoes(avaliacoesDoUsuario);
+                } catch (error) {
+                    console.error("Erro ao buscar avaliações:", error);
+                }
+            }
+        };
+
+        fetchAvaliacoes();
     }, [userID]);
 
     return (
@@ -102,7 +118,22 @@ const PerfilDeUsuario = () => {
                                     <h3 className="text-lg font-semibold text-gray-800 mb-4">Publicações</h3>
                                     
                                     <div className="flex flex-col gap-4">
-                                        <p className="text-sm text-gray-600">Nenhuma publicação ainda.</p>
+                                        {avaliacoes.length === 0 ? (
+                                            <p className="text-sm text-gray-600">Nenhuma avaliação ainda.</p>
+                                        ) : (
+                                            avaliacoes.map((avaliacao, index) => (
+                                                <PostCard
+                                                    key={index}
+                                                    userName={userData?.nome ?? "Usuário"}
+                                                    userImage={userData?.fotosrc ?? "/profileSemFoto/profileSemFoto.jpg"}
+                                                    postDate={new Date(avaliacao.data).toLocaleString('pt-BR')}
+                                                    nomeProfessor={avaliacao.nomeProfessor}
+                                                    materia={avaliacao.materia}
+                                                    postContent={avaliacao.conteudo}
+                                                    commentCount={avaliacao.qtdComentarios ?? 0}
+                                                />
+                                            ))
+                                        )}
                                     </div>
                                 </div>
                             </div>

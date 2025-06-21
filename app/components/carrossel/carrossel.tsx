@@ -7,9 +7,9 @@ import { useRouter } from 'next/navigation';
 interface Professor {
   id : number;
   name: string;
-  area: string;
+  materia: string;
   departamento: string;
-  fotopsrc: string;
+  fotosrc: string;
 }
 
 interface Props {

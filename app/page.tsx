@@ -4,15 +4,17 @@ import NavBar from './components/navbar/NavBar'
 import CarrosselProfessores from './components/carrossel/carrossel'
 import DropdownOrdenar from './components/ordenar/ordenar';
 import { useState } from 'react';
+import { getAllProf } from './utils/api';
+
 
 const Home = () => {
 
   type Professor = {
   id: number;
   name: string;
-  area: string;
+  materia: string;
   departamento: string;
-  fotopsrc: string;
+  fotosrc: string;
 };
 
   const [professores, setProfessores] = useState<Professor[]>([]);
@@ -20,9 +22,12 @@ const Home = () => {
 
   useEffect(() => {
     const fetchProfessores = async () => {
-      const res = await fetch('api/professores');
-      const data = await res.json();
-      setProfessores(data);
+      try {
+        const data = await getAllProf();
+        setProfessores(data);
+      } catch (error) {
+        console.error('Erro ao buscar professores:', error);
+      }
     };
 
     fetchProfessores();
@@ -32,7 +37,7 @@ const Home = () => {
 
   const professoresOrdenados = [...professores].sort((a, b) => {
     if (ordenacao === 'nome') return a.name.localeCompare(b.name);
-    if (ordenacao === 'materia') return a.area.localeCompare(b.area);
+    if (ordenacao === 'materia') return a.materia.localeCompare(b.materia);
     if (ordenacao === 'recentes') return 0; // Manter a ordem original
     if (ordenacao === 'antigas') return -1; // Inverter a ordem original
     return 0;
