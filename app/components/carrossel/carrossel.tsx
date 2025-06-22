@@ -1,3 +1,5 @@
+// app/components/carrossel/carrossel.tsx
+
 'use client';
 import React, { useState } from 'react';
 import ProfQuadro from '../quadro/Quadro';
@@ -34,8 +36,6 @@ export default function CarrosselProfessores({ professores }: Props) {
     );
   };
 
-  
-
   const professoresVisiveis = [...professores, ...professores].slice(index, index + itensVisiveis);
 
   return (
@@ -60,16 +60,13 @@ export default function CarrosselProfessores({ professores }: Props) {
                 margem = 'mx-1';
             }
 
-            // Cálculo do novo índice ao clicar
             const indiceReal = (index + i) % professores.length;
             const novoIndex = (indiceReal - centro + professores.length) % professores.length;
 
             const handleClick = () => {
                 if(i === centro) {
-                    // já está centralizado, vai para o perfil
-                    router.push(`/professor/${prof.nome}`); //Implementar a rota para o perfil do professor
+                    router.push(`/perfilDeProfessor?id=${prof.id}`);
                 } else {
-                    // não está centralizado, apenas atualiza o índice
                     setIndex(novoIndex);
                 }
             }

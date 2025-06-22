@@ -34,6 +34,11 @@ export const getAvaliacoesByUser = async (userId: number) => {
   return response.data.filter((avaliacao: any) => avaliacao.userId === userId);
 };
 
+export const getAvaliacoesByProf = async (profId: number) => {
+  const response = await api.get("/avaliacoes");
+  return response.data.filter((avaliacao: any) => avaliacao.profId === profId);
+};
+
 export const registerUser = async(nome:string, email:string, senha:string, curso: string, departamento: string) => {
     try{
             const response = await api.post("/users", {

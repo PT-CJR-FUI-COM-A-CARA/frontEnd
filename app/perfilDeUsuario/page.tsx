@@ -4,7 +4,7 @@ import NavBar from '../components/navbar/NavBar';
 import { FaBuilding, FaEnvelope, FaArrowLeft } from 'react-icons/fa'; 
 import PostCard from '../components/post_card/PostCard';
 import { useRouter } from 'next/navigation';
-import { getOneUser, getAvaliacoesByUser } from '../utils/api';
+import { getOneUser, getAvaliacoesByUser, getOneProf } from '../utils/api';
 import { jwtDecode } from 'jwt-decode';
 
 const PerfilDeUsuario = () => {
@@ -48,18 +48,55 @@ const PerfilDeUsuario = () => {
     }, [userID]);
 
     useEffect(() => {
-        const fetchAvaliacoes = async () => {
-            if (userID) {
-                try {
-                    const avaliacoesDoUsuario = await getAvaliacoesByUser(userID);
-                    setAvaliacoes(avaliacoesDoUsuario);
-                } catch (error) {
-                    console.error("Erro ao buscar avaliações:", error);
-                }
-            }
-        };
+    const fetchAvaliacoesEProfessores = async () => {
 
-        fetchAvaliacoes();
+        if (userID) {
+            try {
+                const avaliacoesBase = await getAvaliacoesByUser(userID);
+
+                if (!avaliacoesBase || avaliacoesBase.length === 0) {
+                    setAvaliacoes([]);
+                    return; 
+                }
+
+                const avaliacoesCompletasPromises = avaliacoesBase.map(async (avaliacao: any, index: number) => {
+
+                    if (avaliacao.profId) {
+                        try {
+                            const professor = await getOneProf(avaliacao.profId);
+                            
+                            if(!professor) {
+                                return avaliacao;
+                            }
+
+                            const avaliacaoCompleta = {
+                                ...avaliacao,
+                                nomeProfessor: professor.nome,
+                                materia: Array.isArray(professor.materias) ? professor.materias.join(', ') : (professor.materia || 'Não informada'),
+                            };
+                            return avaliacaoCompleta;
+
+                        } catch (profError) {
+                            return avaliacao; 
+                        }
+                    } else {
+                        return avaliacao;
+                    }
+                });
+
+                const avaliacoesCompletas = await Promise.all(avaliacoesCompletasPromises);
+                
+                setAvaliacoes(avaliacoesCompletas);
+
+            } catch (error) {
+                console.error("ERRO GERAL no processo de busca:", error);
+            }
+        } else {
+            console.log("Busca não iniciada: userID é nulo ou zero.");
+        }
+    };
+
+    fetchAvaliacoesEProfessores();
     }, [userID]);
 
     return (
