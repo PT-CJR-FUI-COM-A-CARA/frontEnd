@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 
 interface Professor {
   id : number;
-  name: string;
+  nome: string;
   materia: string;
   departamento: string;
   fotosrc: string;
@@ -67,7 +67,7 @@ export default function CarrosselProfessores({ professores }: Props) {
             const handleClick = () => {
                 if(i === centro) {
                     // já está centralizado, vai para o perfil
-                    router.push(`/professor/${prof.name}`); //Implementar a rota para o perfil do professor
+                    router.push(`/professor/${prof.nome}`); //Implementar a rota para o perfil do professor
                 } else {
                     // não está centralizado, apenas atualiza o índice
                     setIndex(novoIndex);
@@ -75,7 +75,7 @@ export default function CarrosselProfessores({ professores }: Props) {
             }
 
             return (
-                <div key={i + '-' + prof.name} 
+                <div key={i + '-' + prof.nome} 
                 className={`transition-all duration-500 ease-in-out ${estilo} ${margem}`}
                 onClick={handleClick}
                 >

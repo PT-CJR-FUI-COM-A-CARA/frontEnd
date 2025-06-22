@@ -31,7 +31,7 @@ export const getOneProf = async(id: number) => {
 
 export const getAvaliacoesByUser = async (userId: number) => {
   const response = await api.get("/avaliacoes");
-  return response.data.filter((avaliacao: any) => avaliacao.usuarioId === userId);
+  return response.data.filter((avaliacao: any) => avaliacao.userId === userId);
 };
 
 export const registerUser = async(nome:string, email:string, senha:string, curso: string, departamento: string) => {

@@ -129,7 +129,7 @@ const PerfilDeUsuario = () => {
                                                     postDate={new Date(avaliacao.data).toLocaleString('pt-BR')}
                                                     nomeProfessor={avaliacao.nomeProfessor}
                                                     materia={avaliacao.materia}
-                                                    postContent={avaliacao.conteudo}
+                                                    postContent={avaliacao.avaliacao}
                                                     commentCount={avaliacao.qtdComentarios ?? 0}
                                                 />
                                             ))
