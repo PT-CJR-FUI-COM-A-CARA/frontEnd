@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Botão from '../botao_branco/Botão';
+import Botao_Branco from '../botao_branco/Botao_branco';
 import { jwtDecode } from 'jwt-decode';
 import { getOneUser } from '@/app/utils/api'; // ajuste se necessário
 
@@ -102,12 +102,12 @@ export default function NavBar() {
                     ) : (
                         <ul className="flex flex-col sm:flex-row gap-2 sm:gap-4 mr-15">
                             <li className='flex space-x-3'>
-                                <Botão onClick={() => router.push('/login')} type="button">
+                                <Botao_Branco onClick={() => router.push('/login')} type="button">
                                     Login
-                                </Botão>
-                                <Botão onClick={() => router.push('/cadastro')} type="button">
+                                </Botao_Branco>
+                                <Botao_Branco onClick={() => router.push('/cadastro')} type="button">
                                     Cadastro
-                                </Botão>
+                                </Botao_Branco>
                             </li>
                         </ul>
                     )}
