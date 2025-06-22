@@ -4,7 +4,7 @@ import NavBar from '../components/navbar/NavBar';
 import { FaBuilding, FaEnvelope, FaArrowLeft } from 'react-icons/fa'; 
 import PostCard from '../components/post_card/PostCard';
 import { useRouter } from 'next/navigation';
-import { getOneUser } from '../utils/api';
+import { getOneUser, getAvaliacoesByUser, getOneProf } from '../utils/api';
 import { jwtDecode } from 'jwt-decode';
 
 const PerfilDeUsuario = () => {
@@ -13,6 +13,7 @@ const PerfilDeUsuario = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userID, setUserID] = useState<number | null>(null);
     const [userData, setUserData] = useState<any>(null);
+    const [avaliacoes, setAvaliacoes] = useState<any[]>([]);
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -44,6 +45,58 @@ const PerfilDeUsuario = () => {
         };
 
         fetchUser();
+    }, [userID]);
+
+    useEffect(() => {
+    const fetchAvaliacoesEProfessores = async () => {
+
+        if (userID) {
+            try {
+                const avaliacoesBase = await getAvaliacoesByUser(userID);
+
+                if (!avaliacoesBase || avaliacoesBase.length === 0) {
+                    setAvaliacoes([]);
+                    return; 
+                }
+
+                const avaliacoesCompletasPromises = avaliacoesBase.map(async (avaliacao: any, index: number) => {
+
+                    if (avaliacao.profId) {
+                        try {
+                            const professor = await getOneProf(avaliacao.profId);
+                            
+                            if(!professor) {
+                                return avaliacao;
+                            }
+
+                            const avaliacaoCompleta = {
+                                ...avaliacao,
+                                nomeProfessor: professor.nome,
+                                materia: Array.isArray(professor.materias) ? professor.materias.join(', ') : (professor.materia || 'Não informada'),
+                            };
+                            return avaliacaoCompleta;
+
+                        } catch (profError) {
+                            return avaliacao; 
+                        }
+                    } else {
+                        return avaliacao;
+                    }
+                });
+
+                const avaliacoesCompletas = await Promise.all(avaliacoesCompletasPromises);
+                
+                setAvaliacoes(avaliacoesCompletas);
+
+            } catch (error) {
+                console.error("ERRO GERAL no processo de busca:", error);
+            }
+        } else {
+            console.log("Busca não iniciada: userID é nulo ou zero.");
+        }
+    };
+
+    fetchAvaliacoesEProfessores();
     }, [userID]);
 
     return (
@@ -102,7 +155,22 @@ const PerfilDeUsuario = () => {
                                     <h3 className="text-lg font-semibold text-gray-800 mb-4">Publicações</h3>
                                     
                                     <div className="flex flex-col gap-4">
-                                        <p className="text-sm text-gray-600">Nenhuma publicação ainda.</p>
+                                        {avaliacoes.length === 0 ? (
+                                            <p className="text-sm text-gray-600">Nenhuma avaliação ainda.</p>
+                                        ) : (
+                                            avaliacoes.map((avaliacao, index) => (
+                                                <PostCard
+                                                    key={index}
+                                                    userName={userData?.nome ?? "Usuário"}
+                                                    userImage={userData?.fotosrc ?? "/profileSemFoto/profileSemFoto.jpg"}
+                                                    postDate={new Date(avaliacao.data).toLocaleString('pt-BR')}
+                                                    nomeProfessor={avaliacao.nomeProfessor}
+                                                    materia={avaliacao.materia}
+                                                    postContent={avaliacao.avaliacao}
+                                                    commentCount={avaliacao.qtdComentarios ?? 0}
+                                                />
+                                            ))
+                                        )}
                                     </div>
                                 </div>
                             </div>

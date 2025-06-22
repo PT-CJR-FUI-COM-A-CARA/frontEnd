@@ -1,13 +1,12 @@
 'use client'
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Botão from '../botao_branco/Botao_branco';
+import Botao_Branco from '../botao_branco/Botao_branco';
 import { jwtDecode } from 'jwt-decode';
-import { getOneUser } from '@/app/utils/api'; // ajuste se necessário
+import { getOneUser } from '@/app/utils/api';
 
 export default function NavBar() {
     const router = useRouter();
-
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userPhoto, setUserPhoto] = useState<string | null>(null);
     const [userID, setUserID] = useState<number | null>(null);
@@ -102,12 +101,12 @@ export default function NavBar() {
                     ) : (
                         <ul className="flex flex-col sm:flex-row gap-2 sm:gap-4 mr-15">
                             <li className='flex space-x-3'>
-                                <Botão onClick={() => router.push('/login')} type="button">
+                                <Botao_Branco onClick={() => router.push('/login')} type="button">
                                     Login
-                                </Botão>
-                                <Botão onClick={() => router.push('/cadastro')} type="button">
+                                </Botao_Branco>
+                                <Botao_Branco onClick={() => router.push('/cadastro')} type="button">
                                     Cadastro
-                                </Botão>
+                                </Botao_Branco>
                             </li>
                         </ul>
                     )}

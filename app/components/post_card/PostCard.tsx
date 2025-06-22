@@ -3,10 +3,10 @@ import { FaRegComment, FaTrash } from 'react-icons/fa'; // Importando ícones de
 
 interface PostCardProps {
   userName: string;
-  userImage: string; // URL da imagem do usuário
-  postDate: string; // Data e hora da publicação
-  nomeProfessor: string; // Categoria da publicação (e.g., "João Frango", "Rick")
-  materia: string; // Tipo da publicação (e.g., "Surf", "Viagem Interdimensional")
+  userImage: string; 
+  postDate: string; 
+  nomeProfessor: string; 
+  materia: string; 
   postContent: string;
   commentCount: number;
 }
