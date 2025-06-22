@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Botão from '../botao_branco/Botão';
+import Botão from '../botao_branco/Botao_branco';
 import { jwtDecode } from 'jwt-decode';
 import { getOneUser } from '@/app/utils/api'; // ajuste se necessário
 
