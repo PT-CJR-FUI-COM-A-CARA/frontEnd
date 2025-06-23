@@ -2,8 +2,9 @@
 
 import { useRouter } from 'next/navigation';
 import React from 'react';
-import Botão from '../components/botao_azul/Botao';
+import Botão from '../components/botao_azul/Botao_Azul';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { loginUser } from '../utils/api';
 
 export default function LoginPage() {
   const [email, setEmail] = React.useState('');
@@ -13,6 +14,7 @@ export default function LoginPage() {
 
   const router = useRouter();
 
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !senha) {
@@ -20,10 +22,18 @@ export default function LoginPage() {
       return;
     }
     try {
-      // Lógica de autenticação
-    } catch (err) {
+      const response = await loginUser(email, senha);
+      localStorage.setItem("token", response.access_token);
+      const token = localStorage.getItem("token");
+      console.log(token);
+
+      setTimeout(() => {
+        router.push('/');
+      },)
+    } catch (error) {
+      console.error('Erro ao fazer login do usuário:', error);
       setErro('Erro ao fazer login. Verifique suas credenciais.');
-    }
+    } 
   };
 
   return (
