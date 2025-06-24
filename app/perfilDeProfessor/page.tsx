@@ -10,7 +10,6 @@ const PerfilDeProfessor = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const profId = searchParams.get("id");
-
   const [professor, setProfessor] = useState<any>(null);
   const [avaliacoes, setAvaliacoes] = useState<any[]>([]);
 
