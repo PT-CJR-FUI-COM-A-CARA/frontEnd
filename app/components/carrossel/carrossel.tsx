@@ -1,7 +1,7 @@
 // app/components/carrossel/carrossel.tsx
 
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ProfQuadro from '../quadro/Quadro';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
@@ -20,9 +20,24 @@ interface Props {
 
 export default function CarrosselProfessores({ professores }: Props) {
   const [index, setIndex] = useState(0);
+  const [itensVisiveis, setItensVisiveis] = useState(5);
   const router = useRouter();
-  const itensVisiveis = 5;
   const centro = Math.floor(itensVisiveis / 2);
+
+  useEffect(() => {
+  const atualizarItensVisiveis = () => {
+    const largura = window.innerWidth;
+    if (largura < 640) setItensVisiveis(1);
+    else if (largura < 768) setItensVisiveis(3);
+    else if (largura < 1024) setItensVisiveis(3);
+    else if (largura < 1280) setItensVisiveis(3);
+    else setItensVisiveis(5);
+  };
+
+  atualizarItensVisiveis();
+  window.addEventListener('resize', atualizarItensVisiveis);
+  return () => window.removeEventListener('resize', atualizarItensVisiveis);
+}, []);
 
   const handlePrev = () => {
     setIndex((prevIndex) =>
