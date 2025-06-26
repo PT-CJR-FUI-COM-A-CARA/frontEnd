@@ -1,6 +1,7 @@
 'use client';
 import React, { useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Botão from '../botao_azul/Botao_Azul';
 
 interface MenuModalProps {
   isOpen: boolean;
@@ -86,12 +87,8 @@ const MenuModal: React.FC<MenuModalProps> = ({ isOpen, onClose }) => {
             >
               Cancelar
             </button>
-            <button
-              type="submit"
-              className="py-2 px-[50px] text-lg sm:text-2xl text-white bg-[#050036] rounded-[10px] hover:bg-opacity-90 transition "
-            >
-              Avaliar
-            </button>
+            <Botão>
+              Avaliar</Botão>
           </div>
         </form>
       </div>
