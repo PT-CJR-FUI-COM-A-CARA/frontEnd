@@ -37,7 +37,6 @@ export default function NavBar() {
     const handleLogout = () => {
         localStorage.removeItem('token');
         setIsLoggedIn(false);
-        router.push('/login');
     }
 
     return (

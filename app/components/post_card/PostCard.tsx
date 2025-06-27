@@ -1,7 +1,9 @@
 import React from 'react';
 import { FaRegComment, FaTrash, FaEdit } from 'react-icons/fa'; // Adicionado FaEdit
+import { deleteAvaliacao, updateAvaliacao } from '@/app/utils/api';
 
 interface PostCardProps {
+  id: number;
   userName: string;
   userImage: string;
   postDate: string;
@@ -9,11 +11,10 @@ interface PostCardProps {
   materia: string;
   postContent: string;
   commentCount: number;
-  onEdit?: () => void;     // Callback para edição
-  onDelete?: () => void;   // Callback para exclusão
 }
 
 const PostCard: React.FC<PostCardProps> = ({
+  id,
   userName,
   userImage,
   postDate,
@@ -21,8 +22,6 @@ const PostCard: React.FC<PostCardProps> = ({
   materia,
   postContent,
   commentCount,
-  onEdit,
-  onDelete,
 }) => {
   return (
     <div className="bg-yellow-100 rounded-2xl p-5 shadow-sm flex flex-col gap-3">
@@ -53,10 +52,10 @@ const PostCard: React.FC<PostCardProps> = ({
 
         {/* Ações: Editar e Deletar */}
         <div className="flex gap-4 text-gray-600">
-          <button onClick={onEdit} title="Editar">
+          <button onClick={() => updateAvaliacao} title="Editar">
             <FaEdit className="text-lg hover:text-blue-600 transition" />
           </button>
-          <button onClick={onDelete} title="Excluir">
+          <button onClick={() => deleteAvaliacao(id)} title="Excluir">
             <FaTrash className="text-lg hover:text-red-600 transition" />
           </button>
         </div>

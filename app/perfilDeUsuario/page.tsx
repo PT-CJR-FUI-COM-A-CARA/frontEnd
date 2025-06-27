@@ -160,6 +160,7 @@ const PerfilDeUsuario = () => {
                                         ) : (
                                             avaliacoes.map((avaliacao, index) => (
                                                 <PostCard
+                                                    id = {avaliacao.id}
                                                     key={index}
                                                     userName={userData?.nome ?? "Usuário"}
                                                     userImage={userData?.fotosrc ?? "/profileSemFoto/profileSemFoto.jpg"}

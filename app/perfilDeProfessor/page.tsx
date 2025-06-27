@@ -120,6 +120,7 @@ const PerfilDeProfessor = () => {
                     <div className="flex flex-col gap-4">
                       {avaliacoes.map((avaliacao, index) => (
                         <PostCard
+                          id = {avaliacao.id}
                           key={index}
                           userName={avaliacao.nomeUsuario ?? "Usuário"}
                           userImage={
