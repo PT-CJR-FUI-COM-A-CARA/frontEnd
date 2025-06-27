@@ -1,10 +1,11 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import React from 'react';
+import React,{useState,} from 'react';
 import Botão from '../components/botao_azul/Botao_Azul';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { loginUser } from '../utils/api';
+
 
 export default function LoginPage() {
   const [email, setEmail] = React.useState('');
