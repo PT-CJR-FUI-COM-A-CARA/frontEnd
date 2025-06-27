@@ -1,16 +1,47 @@
 'use client';
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Botão from '../botao_azul/Botao_Azul';
+import {
+  Bold, Italic, Heading3, Link as LinkIcon,
+  Image as ImageIcon, Code, HelpCircle
+} from 'lucide-react';
+const execCommand = (command: string, value?: string) => {
+  document.execCommand(command, false, value);
+};
 
 interface MenuModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
+
 const MenuModal: React.FC<MenuModalProps> = ({ isOpen, onClose }) => {
   const modalContentRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const [isBold, setIsBold] = useState(false);
+  const [isItalic, setIsItalic] = useState(false);
+  useEffect(() => {
+  const updateToolbarState = () => {
+    setIsBold(document.queryCommandState('bold'));
+    setIsItalic(document.queryCommandState('italic'));
+  };
+
+  document.addEventListener('selectionchange', updateToolbarState);
+
+  return () => {
+    document.removeEventListener('selectionchange', updateToolbarState);
+  };
+}, []);
+const toggleBold = () => {
+  execCommand('bold');
+  setIsBold((prev) => !prev);
+};
+
+const toggleItalic = () => {
+  execCommand('italic');
+  setIsItalic((prev) => !prev);
+};
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -72,13 +103,36 @@ const MenuModal: React.FC<MenuModalProps> = ({ isOpen, onClose }) => {
             </div>
           </div>
 
-          <div className=" bg-white border border-gray-300 rounded-[20px] overflow-hidden h-[35%]">
-            <textarea
-              className="w-full h-[100%] px-4 py-3 text-base resize-none focus:outline-none"
-            />
-          </div>
+          {/* Editor com barra de ferramentas moderna */}
+<div className="bg-white border border-gray-300 rounded-[20px] overflow-hidden h-[35%] flex flex-col">
+  {/* Toolbar */}
+  <div className="flex gap-3 px-4 py-2 border-b border-gray-300 text-[#050036]">
+        <button
+  type="button"
+  onClick={toggleBold}
+  className={`p-1 rounded ${isBold ? 'bg-blue-100 text-blue-600' : 'text-[#050036]'}`}
+>
+  <Bold className="w-5 h-5" />
+</button>
 
-          {/* Botões alinhados à direita */}
+<button
+  type="button"
+  onClick={toggleItalic}
+  className={`p-1 rounded ${isItalic ? 'bg-blue-100 text-blue-600' : 'text-[#050036]'}`}
+>
+  <Italic className="w-5 h-5" />
+</button>
+  </div>
+
+  {/* Área editável */}
+  <div
+    id="editor"
+    contentEditable
+    className="flex-1 px-4 py-3 text-base overflow-y-auto focus:outline-none"
+    style={{ minHeight: '100px' }}
+  />
+</div>
+
           <div className="flex justify-end items-center gap-6 mt-auto pr-[50px] pb-[20px]">
             <button
               type="button"
