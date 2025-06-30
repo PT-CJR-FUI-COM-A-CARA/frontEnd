@@ -122,6 +122,7 @@ const PerfilDeProfessor = () => {
                         <PostCard
                           id = {avaliacao.id}
                           key={index}
+                          userId={avaliacao.userId}
                           userName={avaliacao.nomeUsuario ?? "Usuário"}
                           userImage={
                             avaliacao.fotoUsuario ??

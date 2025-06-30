@@ -5,6 +5,7 @@ import { jwtDecode } from 'jwt-decode';
 
 interface PostCardProps {
   id: number;
+  userId: number; // ID do autor da avaliação
   userName: string;
   userImage: string;
   postDate: string;
@@ -16,6 +17,7 @@ interface PostCardProps {
 
 const PostCard: React.FC<PostCardProps> = ({
   id,
+  userId,
   userName,
   userImage,
   postDate,
@@ -24,23 +26,26 @@ const PostCard: React.FC<PostCardProps> = ({
   postContent,
   commentCount,
 }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<number | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
 
     if (token) {
-      setIsLoggedIn(true);
       try {
         const decoded: { sub?: string } = jwtDecode(token);
         if (decoded.sub) {
-          
+          const id = Number(decoded.sub);
+          setCurrentUserId(id);
         }
       } catch (error) {
         console.error("Erro ao decodificar token:", error);
       }
     }
   }, []);
+
+  // Verificação: se currentUserId for igual ao userId do post, permite editar/deletar
+  const canEditOrDelete = currentUserId === userId;
 
   return (
     <div className="bg-yellow-100 rounded-2xl p-5 shadow-sm flex flex-col gap-3">
@@ -69,10 +74,10 @@ const PostCard: React.FC<PostCardProps> = ({
           <span className="text-sm">{commentCount} comentários</span>
         </div>
 
-        {/* Ações: Editar e Deletar, somente se logado */}
-        {isLoggedIn && (
+        {/* Ações: só se for o dono */}
+        {canEditOrDelete && (
           <div className="flex gap-4 text-gray-600">
-            <button onClick={() => updateAvaliacao} title="Editar">
+            <button onClick={() => updateAvaliacao(id, "Novo conteúdo")} title="Editar">
               <FaEdit className="text-lg hover:text-blue-600 transition" />
             </button>
             <button onClick={() => deleteAvaliacao(id)} title="Excluir">
