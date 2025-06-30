@@ -10,7 +10,6 @@ const PerfilDeProfessor = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const profId = searchParams.get("id");
-
   const [professor, setProfessor] = useState<any>(null);
   const [avaliacoes, setAvaliacoes] = useState<any[]>([]);
 
@@ -100,8 +99,10 @@ const PerfilDeProfessor = () => {
                 </p>
 
                 <p className="text-[#222E50] flex items-center text-[14px]">
-                  <FaBook className="mr-2 text-lg" />
-                  {professor?.materias?.join(", ") ?? "Matérias não informadas"}
+                    <FaBook className="mr-2 text-lg" />
+                    {professor?.materias?.length
+                      ? professor.materias.map((m: { nome: string }) => m.nome).join(", ")
+                      : "Matérias não informadas"}
                 </p>
 
                 <hr className="my-6 border-[#595652]" />
@@ -119,7 +120,9 @@ const PerfilDeProfessor = () => {
                     <div className="flex flex-col gap-4">
                       {avaliacoes.map((avaliacao, index) => (
                         <PostCard
+                          id = {avaliacao.id}
                           key={index}
+                          userId={avaliacao.userId}
                           userName={avaliacao.nomeUsuario ?? "Usuário"}
                           userImage={
                             avaliacao.fotoUsuario ??

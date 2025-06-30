@@ -160,7 +160,9 @@ const PerfilDeUsuario = () => {
                                         ) : (
                                             avaliacoes.map((avaliacao, index) => (
                                                 <PostCard
+                                                    id = {avaliacao.id}
                                                     key={index}
+                                                    userId={avaliacao.userId}
                                                     userName={userData?.nome ?? "Usuário"}
                                                     userImage={userData?.fotosrc ?? "/profileSemFoto/profileSemFoto.jpg"}
                                                     postDate={new Date(avaliacao.data).toLocaleString('pt-BR')}

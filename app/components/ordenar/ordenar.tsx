@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 
-type OrdenacaoType = 'nome' | 'materia' | 'recentes' | 'antigas';
+type OrdenacaoType = 'nome' | 'departamento' | 'antigas' | 'recentes';
 
 interface DropdownProps {
   ordenacao : OrdenacaoType;
@@ -11,9 +11,9 @@ interface DropdownProps {
 const getTextoOrdenacao = (ord: OrdenacaoType) => {
   switch (ord) {
     case 'nome': return 'Nome';
-    case 'materia': return 'Matéria';
-    case 'recentes': return 'Recentes';
+    case 'departamento': return 'Departamento';
     case 'antigas': return 'Mais Antigos';
+    case 'recentes': return 'Recentes';
     default: return 'Ordenar';
   }
 };
@@ -48,22 +48,22 @@ const DropdownOrdenar: React.FC<DropdownProps> = ({ ordenacao, setOrdenacao }) =
             Nome
           </button>
           <button
-            onClick={() => { setOrdenacao('materia'); setOpen(false); }}
+            onClick={() => { setOrdenacao('departamento'); setOpen(false); }}
             className='hover:bg-gray-200 hover:text-black px-4 py-2 text-left rounded-xl'
           >
-            Matéria
-          </button>
-          <button
-            onClick={() => { setOrdenacao('recentes'); setOpen(false); }}
-            className='hover:bg-gray-200 hover:text-black px-4 py-2 text-left rounded-xl'
-          >
-            Recentes
+            Departamento
           </button>
           <button
             onClick={() => { setOrdenacao('antigas'); setOpen(false); }}
             className='hover:bg-gray-200 hover:text-black px-4 py-2 text-left rounded-xl'
           >
             Mais Antigos
+          </button>
+          <button
+            onClick={() => { setOrdenacao('recentes'); setOpen(false); }}
+            className='hover:bg-gray-200 hover:text-black px-4 py-2 text-left rounded-xl'
+          >
+            Recentes
           </button>
         </div>
       )}

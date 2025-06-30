@@ -40,7 +40,6 @@ export default function NavBar() {
         localStorage.removeItem('token');
         setIsLoggedIn(false);
         router.push('/login');
-
     }
     const handleOpenMenuModal = () => {
         setIsMenuModalOpen(true);
