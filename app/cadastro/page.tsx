@@ -176,14 +176,15 @@ export default function CadastroPage() {
             </div>
           </Popup>
 
-          <div className="w-full flex justify-center mt-8 space-x-20">
+          <div className="w-full flex justify-center mt-6 space-x-20">
             <Botão type="submit">
               Criar Conta
             </Botão>
+          </div>
 
-            <Botão onClick={() => router.push('/login')}>
-              Login
-            </Botão>
+          <div className="text-center text-[#050036] text-sm font-medium">
+              Já possui uma conta?
+              <a href="/login" className="login-link font-semibold hover:underline"> Login</a>
           </div>
         </form>
       </div>

@@ -86,11 +86,11 @@ export default function LoginPage() {
 
           <div className="w-full flex justify-center mt-8 space-x-20">
             <Botão type="submit">Entrar</Botão>
-
-            {/* BOTÃO PARA REDIRECIONAR PARA A PÁGINA DE CADASTRO */}
-            <Botão onClick={() => router.push('/cadastro')}>
-              Criar Conta
-            </Botão>
+          </div>
+          
+          <div className="text-center text-[#050036] text-sm font-medium">
+              Não possui uma conta?
+              <a href="/cadastro" className="login-link font-semibold hover:underline"> Criar Conta</a>
           </div>
         </form>
       </div>

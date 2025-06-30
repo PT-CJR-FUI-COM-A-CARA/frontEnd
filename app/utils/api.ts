@@ -2,7 +2,21 @@ import axios from 'axios';
 
 const api = axios.create({
     baseURL: 'http://localhost:3001',
-})
+    headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    console.log("Token", token);
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  }
+);
 
 export const getAllUsers = async() => {
   const response = await api.get("/users") 
@@ -75,3 +89,27 @@ export const loginUser = async(email:string, senha:string) => {
         }
     }
 }
+
+export const deleteAvaliacao = async (id: number) => {
+  try {
+    const response = await api.delete(`/avaliacoes/${id}`);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error(error.response?.data || error.message);
+    }
+  }
+};
+
+export const updateAvaliacao = async (id: number, avaliacao: string) => {
+  try {
+    const response = await api.patch(`/avaliacoes/${id}`, {
+      avaliacao,
+    });
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error(error.response?.data || error.message);
+    }
+  }
+};
