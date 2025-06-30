@@ -1,6 +1,7 @@
-import React from 'react';
-import { FaRegComment, FaTrash, FaEdit } from 'react-icons/fa'; // Adicionado FaEdit
+import React, { useState, useEffect } from 'react';
+import { FaRegComment, FaTrash, FaEdit } from 'react-icons/fa';
 import { deleteAvaliacao, updateAvaliacao } from '@/app/utils/api';
+import { jwtDecode } from 'jwt-decode';
 
 interface PostCardProps {
   id: number;
@@ -23,6 +24,24 @@ const PostCard: React.FC<PostCardProps> = ({
   postContent,
   commentCount,
 }) => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      setIsLoggedIn(true);
+      try {
+        const decoded: { sub?: string } = jwtDecode(token);
+        if (decoded.sub) {
+          
+        }
+      } catch (error) {
+        console.error("Erro ao decodificar token:", error);
+      }
+    }
+  }, []);
+
   return (
     <div className="bg-yellow-100 rounded-2xl p-5 shadow-sm flex flex-col gap-3">
       {/* Cabeçalho */}
@@ -50,15 +69,17 @@ const PostCard: React.FC<PostCardProps> = ({
           <span className="text-sm">{commentCount} comentários</span>
         </div>
 
-        {/* Ações: Editar e Deletar */}
-        <div className="flex gap-4 text-gray-600">
-          <button onClick={() => updateAvaliacao} title="Editar">
-            <FaEdit className="text-lg hover:text-blue-600 transition" />
-          </button>
-          <button onClick={() => deleteAvaliacao(id)} title="Excluir">
-            <FaTrash className="text-lg hover:text-red-600 transition" />
-          </button>
-        </div>
+        {/* Ações: Editar e Deletar, somente se logado */}
+        {isLoggedIn && (
+          <div className="flex gap-4 text-gray-600">
+            <button onClick={() => updateAvaliacao} title="Editar">
+              <FaEdit className="text-lg hover:text-blue-600 transition" />
+            </button>
+            <button onClick={() => deleteAvaliacao(id)} title="Excluir">
+              <FaTrash className="text-lg hover:text-red-600 transition" />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
