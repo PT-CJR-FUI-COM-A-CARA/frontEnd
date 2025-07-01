@@ -1,9 +1,14 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { FaRegComment, FaTrash, FaEdit } from "react-icons/fa";
-import { deleteAvaliacao, updateAvaliacao, getComentariosCount } from "@/app/utils/api";
+import {
+  deleteAvaliacao,
+  getComentariosCount,
+} from "@/app/utils/api";
 import { jwtDecode } from "jwt-decode";
 import Mcomentario from "../m_comentario/M_Comentario";
+import MeditAvaliacao from "@/app/m_editar_avaliacao/M_Editar_Avaliacao"; 
 
 interface PostCardProps {
   id: number;
@@ -28,7 +33,9 @@ const PostCard: React.FC<PostCardProps> = ({
 }) => {
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
   const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [comentariosCount, setComentariosCount] = useState<number | null>(null);
+  const [conteudoEdit, setConteudoEdit] = useState(postContent);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -59,15 +66,23 @@ const PostCard: React.FC<PostCardProps> = ({
 
   const canEditOrDelete = currentUserId === userId;
 
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
+    // Atualizar conteúdo local após edição, se necessário
+    setConteudoEdit(conteudoEdit); // ou refazer fetch se quiser garantir 100%
+  };
+
   return (
     <div className="bg-yellow-100 rounded-2xl p-5 shadow-sm flex flex-col gap-3">
       {/* Cabeçalho */}
       <div className="flex items-center gap-3">
-        <img
-          src={userImage}
-          alt={userName}
-          className="w-12 h-12 rounded-full object-cover"
-        />
+        <Link href={{ pathname: "/perfilDeUsuario", query: { id: userId } }}>
+          <img
+            src={userImage}
+            alt={userName}
+            className="w-12 h-12 rounded-full object-cover cursor-pointer"
+          />
+        </Link>
         <div className="flex flex-col">
           <p className="font-bold text-[#050036] text-base">
             {userName}{" "}
@@ -81,7 +96,7 @@ const PostCard: React.FC<PostCardProps> = ({
       {/* Conteúdo */}
       <p
         className="text-[#050036] text-base leading-relaxed"
-        dangerouslySetInnerHTML={{ __html: postContent }}
+        dangerouslySetInnerHTML={{ __html: conteudoEdit }}
       />
 
       {/* Rodapé */}
@@ -98,11 +113,12 @@ const PostCard: React.FC<PostCardProps> = ({
         {canEditOrDelete && (
           <div className="flex gap-4 text-gray-600">
             <button
-              onClick={() => updateAvaliacao(id, "Novo conteúdo")}
+              onClick={() => setIsEditModalOpen(true)}
               title="Editar"
             >
               <FaEdit className="text-lg hover:text-blue-600 transition" />
             </button>
+
             <button onClick={() => deleteAvaliacao(id)} title="Excluir">
               <FaTrash className="text-lg hover:text-red-600 transition" />
             </button>
@@ -115,7 +131,6 @@ const PostCard: React.FC<PostCardProps> = ({
         isOpen={isCommentModalOpen}
         onCloseAction={() => {
           setIsCommentModalOpen(false);
-          // Atualizar o count após fechar modal caso tenha enviado comentário
           async function atualizarCount() {
             try {
               const count = await getComentariosCount(id);
@@ -127,6 +142,14 @@ const PostCard: React.FC<PostCardProps> = ({
           atualizarCount();
         }}
         avaliacaoId={id}
+      />
+
+      {/* Modal de edição */}
+      <MeditAvaliacao
+        isOpen={isEditModalOpen}
+        onCloseAction={handleCloseEditModal}
+        avaliacaoId={id}          
+        avaliacaoAtual={conteudoEdit} 
       />
     </div>
   );

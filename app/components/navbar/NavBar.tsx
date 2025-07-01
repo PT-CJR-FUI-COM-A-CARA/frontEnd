@@ -87,7 +87,7 @@ export default function NavBar() {
 
                             <li>
                                 <button
-                                    onClick={() => router.push('/perfilDeUsuario')}
+                                    onClick={() => router.push(`/perfilDeUsuario?id=${userID}`)}
                                     className="p-1 rounded-full hover:scale-110 transition duration-300 cursor-pointer"
                                     aria-label="Perfil do usuário"
                                 >

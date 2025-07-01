@@ -103,14 +103,13 @@ export const deleteAvaliacao = async (id: number) => {
 
 export const updateAvaliacao = async (id: number, avaliacao: string) => {
   try {
-    const response = await api.patch(`/avaliacoes/${id}`, {
-      avaliacao,
-    });
+    const response = await api.patch(`/avaliacoes/${id}`, { avaliacao });
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.error(error.response?.data || error.message);
     }
+    throw error;
   }
 };
 

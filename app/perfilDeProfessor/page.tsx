@@ -113,19 +113,21 @@ const PerfilDeProfessor = () => {
                     <p className="text-sm text-gray-600">Nenhuma avaliação ainda.</p>
                   ) : (
                     <div className="flex flex-col gap-4">
-                      {avaliacoes.map((avaliacao, index) => (
-                        <PostCard
-                          key={index}
-                          id={avaliacao.id}
-                          userId={avaliacao.userId}
-                          userName={avaliacao.nomeUsuario ?? "Usuário"}
-                          userImage={avaliacao.fotoUsuario ?? "/profileSemFoto/profileSemFoto.jpg"}
-                          postDate={new Date(avaliacao.data).toLocaleString("pt-BR")}
-                          nomeProfessor={professor?.nome}
-                          materia={avaliacao.materia ?? "Matéria não informada"}
-                          postContent={avaliacao.avaliacao}
-                        />
-                      ))}
+                      {avaliacoes
+                        .filter((avaliacao) => typeof avaliacao.id === "number" && !isNaN(avaliacao.id))
+                        .map((avaliacao, index) => (
+                          <PostCard
+                            key={index}
+                            id={avaliacao.id}
+                            userId={avaliacao.userId}
+                            userName={avaliacao.nomeUsuario ?? "Usuário"}
+                            userImage={avaliacao.fotoUsuario ?? "/profileSemFoto/profileSemFoto.jpg"}
+                            postDate={new Date(avaliacao.data).toLocaleString("pt-BR")}
+                            nomeProfessor={professor?.nome}
+                            materia={avaliacao.materia ?? "Matéria não informada"}
+                            postContent={avaliacao.avaliacao}
+                          />
+                        ))}
                     </div>
                   )}
                 </div>
