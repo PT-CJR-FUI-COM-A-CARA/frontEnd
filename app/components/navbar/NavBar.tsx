@@ -41,6 +41,7 @@ export default function NavBar() {
         setIsLoggedIn(false);
         router.push('/login');
     }
+
     const handleOpenMenuModal = () => {
         setIsMenuModalOpen(true);
     };
@@ -122,7 +123,10 @@ export default function NavBar() {
                     )}
                 </div>
             </nav>
-            <MenuModal isOpen={isMenuModalOpen} onClose={handleCloseMenuModal} />
+            <MenuModal
+                isOpen={isMenuModalOpen}
+                onClose={handleCloseMenuModal}
+            />
         </header>
     );
 }

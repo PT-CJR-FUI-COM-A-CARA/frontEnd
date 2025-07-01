@@ -63,9 +63,10 @@ const PostCard: React.FC<PostCardProps> = ({
       </div>
 
       {/* Conteúdo */}
-      <p className="text-[#050036] text-base leading-relaxed">
-        {postContent}
-      </p>
+      <p
+        className="text-[#050036] text-base leading-relaxed"
+        dangerouslySetInnerHTML={{ __html: postContent }}
+      />
 
       {/* Rodapé */}
       <div className="flex justify-between items-center mt-2">

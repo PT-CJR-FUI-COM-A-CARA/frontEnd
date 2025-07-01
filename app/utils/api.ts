@@ -113,3 +113,22 @@ export const updateAvaliacao = async (id: number, avaliacao: string) => {
     }
   }
 };
+
+export const postAvaliacao = async(avaliacao:string, materia:string, userId: number, profId: number) => {
+    try{
+            const response = await api.post("/avaliacoes", {
+            avaliacao, 
+            materia,
+            userId,
+            profId,
+            });
+            return response.data
+            
+        }
+
+    catch(error){
+        if (axios.isAxiosError(error)){
+            console.error(error.response?.data || error.message)
+        }
+    }
+}

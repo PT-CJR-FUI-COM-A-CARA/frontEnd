@@ -8,8 +8,6 @@ interface ModalProps {
   
 }
 
-
-
 export const Mcomentario = ({ onClose,isOpen }: ModalProps) =>{
    
      const editorRef = useRef<HTMLDivElement>(null);
@@ -83,7 +81,7 @@ export const Mcomentario = ({ onClose,isOpen }: ModalProps) =>{
                     <button
                      type="button"
                     onClick={TransNegrito}
-                    className={`px-4 py-2 w-4 h-4 rounded text-white w-fit cursor-pointer`}
+                    className={`px-4 py-2 h-4 rounded text-white w-fit cursor-pointer`}
                     >
                         <FaBold  className= {`w-5 h-5 ${negritoAtivo? ' bg-[#050036]' : 'text-[#050036]'}`}/>
                     </button>
