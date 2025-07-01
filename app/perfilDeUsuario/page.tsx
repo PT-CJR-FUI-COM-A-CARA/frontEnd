@@ -1,187 +1,136 @@
-"use client"
-import React, { useEffect, useState } from 'react';
-import NavBar from '../components/navbar/NavBar'; 
-import { FaBuilding, FaEnvelope, FaArrowLeft } from 'react-icons/fa'; 
-import PostCard from '../components/post_card/PostCard';
-import { useRouter } from 'next/navigation';
-import { getOneUser, getAvaliacoesByUser, getOneProf } from '../utils/api';
-import { jwtDecode } from 'jwt-decode';
+"use client";
+import React, { useEffect, useState } from "react";
+import { FaRegComment, FaTrash, FaEdit } from "react-icons/fa";
+import { deleteAvaliacao, updateAvaliacao, getComentariosCount } from "@/app/utils/api";
+import { jwtDecode } from "jwt-decode";
+import Mcomentario from "@/app/components/m_comentario/M_Comentario";
 
-const PerfilDeUsuario = () => {
-    const router = useRouter();
+interface PostCardProps {
+  id: number;
+  userId: number;
+  userName: string;
+  userImage: string;
+  postDate: string;
+  nomeProfessor: string;
+  materia: string;
+  postContent: string;
+}
 
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [userID, setUserID] = useState<number | null>(null);
-    const [userData, setUserData] = useState<any>(null);
-    const [avaliacoes, setAvaliacoes] = useState<any[]>([]);
+const PostCard: React.FC<PostCardProps> = ({
+  id,
+  userId,
+  userName,
+  userImage,
+  postDate,
+  nomeProfessor,
+  materia,
+  postContent,
+}) => {
+  const [currentUserId, setCurrentUserId] = useState<number | null>(null);
+  const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
+  const [comentariosCount, setComentariosCount] = useState<number | null>(null);
 
-    useEffect(() => {
-        const token = localStorage.getItem("token");
-
-        if (token) {
-            setIsLoggedIn(true);
-            try {
-                const decoded: { sub?: string } = jwtDecode(token);
-                if (decoded.sub) {
-                    setUserID(Number(decoded.sub));
-                }
-            } catch (error) {
-                console.error("Erro ao decodificar token:", error);
-            }
+  // Decodifica token para pegar userId atual
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const decoded: { sub?: string } = jwtDecode(token);
+        if (decoded.sub) {
+          setCurrentUserId(Number(decoded.sub));
         }
-    }, []);
+      } catch (error) {
+        console.error("Erro ao decodificar token:", error);
+      }
+    }
+  }, []);
 
-    useEffect(() => {
-        const fetchUser = async () => {
-            if (userID) {
-                try {
-                    const user = await getOneUser(userID);
-                    setUserData(user);
-                    console.log("Usuário carregado:", user);
-                } catch (error) {
-                    console.error("Erro ao buscar usuário:", error);
-                }
-            }
-        };
+  // Busca a quantidade de comentários para essa avaliação
+  useEffect(() => {
+    async function fetchCount() {
+      try {
+        const count = await getComentariosCount(id);
+        setComentariosCount(count);
+      } catch (error) {
+        console.error("Erro ao buscar quantidade de comentários:", error);
+        setComentariosCount(0);
+      }
+    }
+    fetchCount();
+  }, [id]);
 
-        fetchUser();
-    }, [userID]);
+  const canEditOrDelete = currentUserId === userId;
 
-    useEffect(() => {
-    const fetchAvaliacoesEProfessores = async () => {
+  return (
+    <div className="bg-yellow-100 rounded-2xl p-5 shadow-sm flex flex-col gap-3">
+      {/* Cabeçalho */}
+      <div className="flex items-center gap-3">
+        <img
+          src={userImage}
+          alt={userName}
+          className="w-12 h-12 rounded-full object-cover"
+        />
+        <div className="flex flex-col">
+          <p className="font-bold text-[#050036] text-base">
+            {userName}{" "}
+            <span className="font-normal text-sm text-gray-600">
+              · {postDate} · {nomeProfessor} · {materia}
+            </span>
+          </p>
+        </div>
+      </div>
 
-        if (userID) {
+      {/* Conteúdo */}
+      <p
+        className="text-[#050036] text-base leading-relaxed"
+        dangerouslySetInnerHTML={{ __html: postContent }}
+      />
+
+      {/* Rodapé */}
+      <div className="flex justify-between items-center mt-2">
+        <div className="flex items-center gap-2 text-gray-700">
+          <button onClick={() => setIsCommentModalOpen(true)}>
+            <FaRegComment className="text-xl hover:text-blue-600 transition" />
+          </button>
+          <span className="text-sm">
+            {comentariosCount !== null ? comentariosCount : "Carregando..."} comentários
+          </span>
+        </div>
+
+        {canEditOrDelete && (
+          <div className="flex gap-4 text-gray-600">
+            <button
+              onClick={() => updateAvaliacao(id, "Novo conteúdo")}
+              title="Editar"
+            >
+              <FaEdit className="text-lg hover:text-blue-600 transition" />
+            </button>
+            <button onClick={() => deleteAvaliacao(id)} title="Excluir">
+              <FaTrash className="text-lg hover:text-red-600 transition" />
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Modal de comentário */}
+      <Mcomentario
+        isOpen={isCommentModalOpen}
+        onCloseAction={() => {
+          setIsCommentModalOpen(false);
+          // Atualiza a quantidade de comentários ao fechar o modal
+          (async () => {
             try {
-                const avaliacoesBase = await getAvaliacoesByUser(userID);
-
-                if (!avaliacoesBase || avaliacoesBase.length === 0) {
-                    setAvaliacoes([]);
-                    return; 
-                }
-
-                const avaliacoesCompletasPromises = avaliacoesBase.map(async (avaliacao: any, index: number) => {
-
-                    if (avaliacao.profId) {
-                        try {
-                            const professor = await getOneProf(avaliacao.profId);
-                            
-                            if(!professor) {
-                                return avaliacao;
-                            }
-
-                            const avaliacaoCompleta = {
-                                ...avaliacao,
-                                nomeProfessor: professor.nome,
-                                materia: Array.isArray(professor.materias) ? professor.materias.join(', ') : (professor.materia || 'Não informada'),
-                            };
-                            return avaliacaoCompleta;
-
-                        } catch (profError) {
-                            return avaliacao; 
-                        }
-                    } else {
-                        return avaliacao;
-                    }
-                });
-
-                const avaliacoesCompletas = await Promise.all(avaliacoesCompletasPromises);
-                
-                setAvaliacoes(avaliacoesCompletas);
-
+              const count = await getComentariosCount(id);
+              setComentariosCount(count);
             } catch (error) {
-                console.error("ERRO GERAL no processo de busca:", error);
+              console.error("Erro ao atualizar quantidade de comentários:", error);
             }
-        } else {
-            console.log("Busca não iniciada: userID é nulo ou zero.");
-        }
-    };
-
-    fetchAvaliacoesEProfessores();
-    }, [userID]);
-
-    return (
-        <>
-            <NavBar /> 
-
-            <div className="flex bg-[#EDEDED] min-h-[calc(100vh-60px)] pt-10 pb-10">
-                <div className="w-full max-w-2xl mx-auto relative"> 
-                    <button
-                        onClick={() => router.back()}
-                        className="absolute top-16 left-[-60px] w-12 h-12 rounded-full bg-white border border-gray-300 flex items-center justify-center shadow-md cursor-pointer"
-                    >
-                        <FaArrowLeft className="text-gray-700 text-xl" />
-                    </button>
-
-                    <div className="relative">
-                        <div className="bg-yellow-100 h-32 rounded-t-lg"></div>
-
-                        <div className="bg-white rounded-b-lg shadow-md px-6 py-6 relative">
-                            <img
-                                src={userData?.fotosrc ?? "/profileSemFoto/profileSemFoto.jpg"}
-                                alt="Profile Avatar"
-                                className="absolute top-0 left-6 transform -translate-y-1/2 
-                                        w-36 h-36 rounded-full object-cover border-4 border-white shadow-lg"
-                            />
-
-                            {isLoggedIn && (
-                                <div className="absolute top-6 right-6 flex space-x-2">
-                                    <button className="bg-[#222E50] text-white px-4 py-2 rounded-md text-sm font-medium shadow-sm hover:bg-[#1A253E] transition-colors duration-200">
-                                        Editar Perfil
-                                    </button>
-                                    <button className="bg-red-500 text-white px-4 py-2 rounded-md text-sm font-medium shadow-sm hover:bg-red-600 transition-colors duration-200">
-                                        Excluir Perfil
-                                    </button>
-                                </div>
-                            )}
-
-                            <div className="pl-2 pt-14">
-                                <h2 className="text-2xl font-semibold text-[#222E50] mb-2">
-                                    {userData?.nome ?? "Nome não informado"}
-                                </h2>
-                                
-                                <p className="text-[#222E50] mb-1 flex items-center text-[14px]">
-                                    <FaBuilding className="mr-2 text-lg" /> 
-                                    {userData?.departamento ?? "Departamento não informado"}
-                                </p>
-                                
-                                <p className="text-[#222E50] flex items-center text-[14px]">
-                                    <FaEnvelope className="mr-2 text-lg" /> 
-                                    {userData?.email ?? "Email não informado"}
-                                </p>
-
-                                <hr className="my-6 border-[#595652]" />
-
-                                <div className="pb-2">
-                                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Publicações</h3>
-                                    
-                                    <div className="flex flex-col gap-4">
-                                        {avaliacoes.length === 0 ? (
-                                            <p className="text-sm text-gray-600">Nenhuma avaliação ainda.</p>
-                                        ) : (
-                                            avaliacoes.map((avaliacao, index) => (
-                                                <PostCard
-                                                    id = {avaliacao.id}
-                                                    key={index}
-                                                    userId={avaliacao.userId}
-                                                    userName={userData?.nome ?? "Usuário"}
-                                                    userImage={userData?.fotosrc ?? "/profileSemFoto/profileSemFoto.jpg"}
-                                                    postDate={new Date(avaliacao.data).toLocaleString('pt-BR')}
-                                                    nomeProfessor={avaliacao.nomeProfessor}
-                                                    materia={avaliacao.materia}
-                                                    postContent={avaliacao.avaliacao}
-                                                    commentCount={avaliacao.qtdComentarios ?? 0}
-                                                />
-                                            ))
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </>
-    );
+          })();
+        }}
+        avaliacaoId={id}
+      />
+    </div>
+  );
 };
 
-export default PerfilDeUsuario;
+export default PostCard;

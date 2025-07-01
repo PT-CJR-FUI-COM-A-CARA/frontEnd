@@ -132,3 +132,50 @@ export const postAvaliacao = async(avaliacao:string, materia:string, userId: num
         }
     }
 }
+
+export const deleteComentario = async (id: number) => {
+  try {
+    const response = await api.delete(`/comentarios/${id}`);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error(error.response?.data || error.message);
+    }
+  }
+};
+
+export const updateComentario = async (id: number, conteudo: string) => {
+  try {
+    const response = await api.patch(`/comentarios/${id}`, {
+      conteudo,
+    });
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error(error.response?.data || error.message);
+    }
+  }
+};
+
+export const postComentario = async(conteudo:string, usersId:number, avaliacaoId: number) => {
+    try{
+            const response = await api.post("/comentarios", {
+            conteudo, 
+            usersId,
+            avaliacaoId,
+            });
+            return response.data
+            
+        }
+
+    catch(error){
+        if (axios.isAxiosError(error)){
+            console.error(error.response?.data || error.message)
+        }
+    }
+}
+
+export const getComentariosCount = async (avaliacaoId: number) => {
+  const response = await api.get(`/comentarios/count/${avaliacaoId}`);
+  return response.data.count; 
+};
