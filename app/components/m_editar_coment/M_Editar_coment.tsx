@@ -1,21 +1,29 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { FaBold, FaItalic } from 'react-icons/fa';
+import { updateAvaliacao, deleteAvaliacao } from '@/app/utils/api';
 import { BsTrash } from 'react-icons/bs';
-import { updateComentario, deleteComentario } from '@/app/utils/api';
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  comentarioId: number;      // ID do comentário
-  initialContent: string;    // Conteúdo atual do comentário
+  avaliacaoId: number;
+  initialContent: string;
+  onUpdated: () => void; // Para atualizar a lista após edição
+  onDeleted: () => void; // Para atualizar lista após exclusão
 }
 
-export const MeditComent = ({ onClose, isOpen, comentarioId, initialContent }: ModalProps) => {
+const MeditAvaliacao = ({
+  isOpen,
+  onClose,
+  avaliacaoId,
+  initialContent,
+  onUpdated,
+  onDeleted
+}: ModalProps) => {
   const editorRef = useRef<HTMLDivElement>(null);
   const [italicoAtivo, setItalicoAtivo] = useState(false);
   const [negritoAtivo, setNegritoAtivo] = useState(false);
 
-  // Preenche conteúdo inicial quando abrir
   useEffect(() => {
     if (editorRef.current && isOpen) {
       editorRef.current.innerHTML = initialContent;
@@ -34,27 +42,27 @@ export const MeditComent = ({ onClose, isOpen, comentarioId, initialContent }: M
     setNegritoAtivo(!negritoAtivo);
   };
 
-  const handleUpdate = async (event: React.FormEvent) => {
-    event.preventDefault();
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
     const conteudo = editorRef.current?.innerHTML || '';
     try {
-      await updateComentario(comentarioId, conteudo);
-      console.log("Comentário atualizado com sucesso!");
+      await updateAvaliacao(avaliacaoId, conteudo);
+      console.log("Avaliação atualizada com sucesso!");
+      onUpdated(); // Atualiza lista no frontend
       onClose();
-      // Aqui você pode atualizar lista de comentários no frontend
     } catch (error) {
-      console.error("Erro ao atualizar comentário:", error);
+      console.error("Erro ao atualizar avaliação:", error);
     }
   };
 
   const handleDelete = async () => {
     try {
-      await deleteComentario(comentarioId);
-      console.log("Comentário excluído com sucesso!");
+      await deleteAvaliacao(avaliacaoId);
+      console.log("Avaliação excluída com sucesso!");
+      onDeleted();
       onClose();
-      // Aqui você pode remover comentário da lista no frontend
     } catch (error) {
-      console.error("Erro ao excluir comentário:", error);
+      console.error("Erro ao excluir avaliação:", error);
     }
   };
 
@@ -65,10 +73,10 @@ export const MeditComent = ({ onClose, isOpen, comentarioId, initialContent }: M
       <div className='bg-[#ECEDBC] w-[45%] h-[45%] rounded-2xl p-6 flex flex-col'>
         <div className='bg-[#FFFFFF] w-[90%] h-[80%] self-center rounded-2xl flex flex-col'>
           <div className='flex gap-4 mb-4'>
-            <button type="button" onClick={TransItalico} className="px-4 py-2 rounded text-white w-fit cursor-pointer">
+            <button type="button" onClick={TransItalico}>
               <FaItalic className={`w-5 h-5 ${italicoAtivo ? 'bg-[#050036]' : 'text-[#050036]'}`} />
             </button>
-            <button type="button" onClick={TransNegrito} className="px-4 py-2 rounded text-white w-fit cursor-pointer">
+            <button type="button" onClick={TransNegrito}>
               <FaBold className={`w-5 h-5 ${negritoAtivo ? 'bg-[#050036]' : 'text-[#050036]'}`} />
             </button>
           </div>
@@ -99,3 +107,5 @@ export const MeditComent = ({ onClose, isOpen, comentarioId, initialContent }: M
     </form>
   );
 };
+
+export default MeditAvaliacao;
