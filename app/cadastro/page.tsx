@@ -6,6 +6,7 @@ import Botão from '../components/botao_azul/Botao_Azul';
 import Popup from '../components/popup/PopUp';
 import { registerUser } from '../utils/api';
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import PopUp from '../components/popup/PopUp';
 
 export default function CadastroPage() {
   const [senha, setSenha] = useState('');
@@ -34,7 +35,7 @@ export default function CadastroPage() {
 
       setTimeout(() => {
         router.push('/login');
-      }, 3500);
+      }, 3000);
 
     } catch (error) {
       console.error('Erro ao registrar usuário:', error);
@@ -169,12 +170,11 @@ export default function CadastroPage() {
 
           {erro && <p className="text-red-500 text-sm">{erro}</p>}
 
-          <Popup isOpen={popupAberto} onClose={() => setPopupAberto(false)}>
-            <div className='flex flex-col items-center'>
-              <h2 className='text-[#050036] font-bold mb-4'>Cadastro realizado com sucesso!</h2>
-              <p className='text-[#050036]'>Redirecionando para o login...</p>
-            </div>
-          </Popup>
+          <PopUp 
+          isOpen={popupAberto}
+          title="Cadastro realizado com sucesso!"
+          description="Redirecionando para o login..."
+          />
 
           <div className="w-full flex justify-center mt-6 space-x-20">
             <Botão type="submit">

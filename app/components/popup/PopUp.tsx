@@ -1,12 +1,12 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
 
 interface PopUpProps {
   isOpen: boolean;
-  onClose?: () => void;
-  children: ReactNode;
+  title?: string; 
+  description?: string; 
 }
 
-const PopUp: React.FC<PopUpProps> = ({ children, isOpen }) => {
+const PopUp: React.FC<PopUpProps> = ({ isOpen, title, description}) => {
   return (
     <div
       className={`
@@ -22,8 +22,8 @@ const PopUp: React.FC<PopUpProps> = ({ children, isOpen }) => {
           className="w-24 h-24 mr-4 object-contain"
         />
         <div className="flex flex-col justify-center">
-          <h2 className="text-xl font-bold text-indigo-900 mb-2">Cadastro realizado com sucesso!</h2>
-          <p className="text-gray-700">Redirecionando para o login...</p>
+          <h2 className="text-xl font-bold text-indigo-900 mb-2">{title}</h2>
+          <p className="text-gray-700">{description}</p>
         </div>
       </div>
     </div>
@@ -31,4 +31,3 @@ const PopUp: React.FC<PopUpProps> = ({ children, isOpen }) => {
 };
 
 export default PopUp;
-
