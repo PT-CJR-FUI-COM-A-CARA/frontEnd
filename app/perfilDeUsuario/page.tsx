@@ -68,9 +68,10 @@ const PerfilDeUsuario = () => {
       <div className="flex bg-[#EDEDED] min-h-[calc(100vh-60px)] pt-10 pb-10">
         <div className="w-full max-w-2xl mx-auto relative">
           <button
-            onClick={() => router.back()}
-            className="absolute top-16 left-[-60px] w-12 h-12 rounded-full bg-white border border-gray-300 flex items-center justify-center shadow-md cursor-pointer"
-          >
+                onClick={() => router.back()}
+                className="absolute top-8 left-[-60px] md:left-[-80px] w-12 h-12 rounded-full bg-white border flex items-center justify-center shadow-md hover:bg-gray-200 transition"
+                title="Voltar"
+              >
             <FaArrowLeft className="text-gray-700 text-xl" />
           </button>
 

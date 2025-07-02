@@ -2,14 +2,14 @@
 import React, { useRef, useEffect, useState } from "react";
 import { Bold, Italic } from "lucide-react";
 import { jwtDecode } from "jwt-decode";
-import { updateComentario } from "@/app/utils/api"; // ajusta o caminho se precisar
+import { updateComentario } from "@/app/utils/api"; 
 import Botao from "../botao_azul/Botao_Azul";
 
 interface ModalProps {
   isOpen: boolean;
   onCloseAction: () => void;
-  comentarioId: number;          // id do comentário que será editado
-  conteudoAtual: string;         // conteúdo atual do comentário para popular o editor
+  comentarioId: number;          
+  conteudoAtual: string;         
 }
 
 const MeditComment: React.FC<ModalProps> = ({ isOpen, onCloseAction, comentarioId, conteudoAtual }) => {
