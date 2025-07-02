@@ -163,7 +163,7 @@ const PaginaAvaliacao = () => {
                 </div>
               <p className="text-[#050036] text-base" dangerouslySetInnerHTML={{ __html: avaliacao.avaliacao }} />
                 <div className="flex items-center gap-2 text-gray-700 mt-2">
-                 <p className="text-sm">{comentarios.length} comentários</p>
+                <p className="text-sm">{comentarios.length} comentários</p>
                 </div>
               {comentarios.length > 0 && (
                 <hr className="border-t-2 border-black my-2" />

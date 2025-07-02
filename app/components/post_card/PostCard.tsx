@@ -2,13 +2,10 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { FaRegComment, FaTrash, FaEdit } from "react-icons/fa";
-import {
-  deleteAvaliacao,
-  getComentariosCount,
-} from "@/app/utils/api";
+import { deleteAvaliacao, getComentariosCount } from "@/app/utils/api";
 import { jwtDecode } from "jwt-decode";
 import Mcomentario from "../m_comentario/M_Comentario";
-import MeditAvaliacao from "@/app/m_editar_avaliacao/M_Editar_Avaliacao"; 
+import MeditAvaliacao from "@/app/m_editar_avaliacao/M_Editar_Avaliacao";
 
 interface PostCardProps {
   id: number;
@@ -19,6 +16,7 @@ interface PostCardProps {
   nomeProfessor: string;
   materia: string;
   postContent: string;
+  onAction?: () => void; 
 }
 
 const PostCard: React.FC<PostCardProps> = ({
@@ -30,12 +28,12 @@ const PostCard: React.FC<PostCardProps> = ({
   nomeProfessor,
   materia,
   postContent,
+  onAction, 
 }) => {
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
   const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [comentariosCount, setComentariosCount] = useState<number | null>(null);
-  const [conteudoEdit, setConteudoEdit] = useState(postContent);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -52,29 +50,32 @@ const PostCard: React.FC<PostCardProps> = ({
   }, []);
 
   useEffect(() => {
-    async function fetchCount() {
-      try {
-        const count = await getComentariosCount(id);
-        setComentariosCount(count);
-      } catch (error) {
-        console.error("Erro ao buscar quantidade de comentários:", error);
-        setComentariosCount(0);
-      }
-    }
-    fetchCount();
+    getComentariosCount(id)
+      .then(setComentariosCount)
+      .catch(() => setComentariosCount(0));
   }, [id]);
 
   const canEditOrDelete = currentUserId === userId;
 
-  const handleCloseEditModal = () => {
+
+  const handleEditModalClose = () => {
     setIsEditModalOpen(false);
-    // Atualizar conteúdo local após edição, se necessário
-    setConteudoEdit(conteudoEdit); // ou refazer fetch se quiser garantir 100%
+    if (onAction) {
+      onAction(); 
+    }
+  };
+
+  const handleDelete = async () => {
+    if (window.confirm("Tem a certeza que deseja excluir esta avaliação?")) {
+      await deleteAvaliacao(id);
+      if (onAction) {
+        onAction(); 
+      }
+    }
   };
 
   return (
     <div className="bg-yellow-100 rounded-2xl p-5 shadow-sm flex flex-col gap-3">
-      {/* Cabeçalho */}
       <div className="flex items-center gap-3">
         <Link href={{ pathname: "/perfilDeUsuario", query: { id: userId } }}>
           <img
@@ -83,7 +84,7 @@ const PostCard: React.FC<PostCardProps> = ({
             className="w-12 h-12 rounded-full object-cover cursor-pointer"
           />
         </Link>
-        <div className="flex flex-col">
+        <div>
           <p className="font-bold text-[#050036] text-base">
             {userName}{" "}
             <span className="font-normal text-sm text-gray-600">
@@ -93,63 +94,43 @@ const PostCard: React.FC<PostCardProps> = ({
         </div>
       </div>
 
-      {/* Conteúdo */}
       <p
         className="text-[#050036] text-base leading-relaxed"
-        dangerouslySetInnerHTML={{ __html: conteudoEdit }}
+        dangerouslySetInnerHTML={{ __html: postContent }}
       />
 
-      {/* Rodapé */}
       <div className="flex justify-between items-center mt-2">
         <div className="flex items-center gap-2 text-gray-700">
           <button onClick={() => setIsCommentModalOpen(true)}>
             <FaRegComment className="text-xl hover:text-blue-600 transition" />
           </button>
           <Link href={{ pathname: '/Avaliacao', query: { id } }} className="text-sm hover:underline cursor-pointer">
-              Ver {comentariosCount !== null ? comentariosCount : "..."} comentários
+            Ver {comentariosCount ?? "..."} comentários
           </Link>
         </div>
-
         {canEditOrDelete && (
           <div className="flex gap-4 text-gray-600">
-            <button
-              onClick={() => setIsEditModalOpen(true)}
-              title="Editar"
-            >
+            <button onClick={() => setIsEditModalOpen(true)} title="Editar">
               <FaEdit className="text-lg hover:text-blue-600 transition" />
             </button>
-
-            <button onClick={() => deleteAvaliacao(id)} title="Excluir">
+            <button onClick={handleDelete} title="Excluir">
               <FaTrash className="text-lg hover:text-red-600 transition" />
             </button>
           </div>
         )}
       </div>
 
-      {/* Modal de comentário */}
       <Mcomentario
         isOpen={isCommentModalOpen}
-        onCloseAction={() => {
-          setIsCommentModalOpen(false);
-          async function atualizarCount() {
-            try {
-              const count = await getComentariosCount(id);
-              setComentariosCount(count);
-            } catch (error) {
-              console.error("Erro ao atualizar quantidade de comentários:", error);
-            }
-          }
-          atualizarCount();
-        }}
+        onCloseAction={() => setIsCommentModalOpen(false)}
         avaliacaoId={id}
       />
 
-      {/* Modal de edição */}
       <MeditAvaliacao
         isOpen={isEditModalOpen}
-        onCloseAction={handleCloseEditModal}
-        avaliacaoId={id}          
-        avaliacaoAtual={conteudoEdit} 
+        onCloseAction={handleEditModalClose} 
+        avaliacaoId={id}
+        avaliacaoAtual={postContent}
       />
     </div>
   );
