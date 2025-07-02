@@ -105,9 +105,9 @@ const PostCard: React.FC<PostCardProps> = ({
           <button onClick={() => setIsCommentModalOpen(true)}>
             <FaRegComment className="text-xl hover:text-blue-600 transition" />
           </button>
-          <span className="text-sm">
-            {comentariosCount !== null ? comentariosCount : "Carregando..."} comentários
-          </span>
+          <Link href={{ pathname: '/Avaliacao', query: { id } }} className="text-sm hover:underline cursor-pointer">
+              Ver {comentariosCount !== null ? comentariosCount : "..."} comentários
+          </Link>
         </div>
 
         {canEditOrDelete && (
