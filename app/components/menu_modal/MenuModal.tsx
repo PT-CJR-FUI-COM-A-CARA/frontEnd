@@ -12,6 +12,7 @@ const execCommand = (command: string, value?: string) => {
 interface MenuModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onEnviarAvaliacao: () => void; // <<< ADICIONADO
 }
 
 interface Professor {
@@ -20,7 +21,7 @@ interface Professor {
   materias: { id: number; nome: string }[];
 }
 
-const MenuModal: React.FC<MenuModalProps> = ({ isOpen, onClose }) => {
+const MenuModal: React.FC<MenuModalProps> = ({ isOpen, onClose, onEnviarAvaliacao }) => {
   const modalContentRef = useRef<HTMLDivElement>(null);
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
@@ -118,6 +119,9 @@ const MenuModal: React.FC<MenuModalProps> = ({ isOpen, onClose }) => {
         Number(professorSelecionado)
       );
 
+      // Chama a função recebida na prop
+      onEnviarAvaliacao();
+      
       onClose();
     } catch (error) {
       console.error("Erro ao postar avaliação:", error);

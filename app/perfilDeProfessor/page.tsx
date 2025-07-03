@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import NavBar from "../components/navbar/NavBar";
 import { FaBuilding, FaBook, FaArrowLeft } from "react-icons/fa";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -10,67 +10,77 @@ const PerfilDeProfessor = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const profId = searchParams.get("id");
+  
   const [professor, setProfessor] = useState<any>(null);
   const [avaliacoes, setAvaliacoes] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchProfessor = async () => {
-      if (profId) {
-        try {
-          const prof = await getOneProf(Number(profId));
-          setProfessor(prof);
-        } catch (error) {
-          console.error("Erro ao carregar professor:", error);
-        }
-      }
-    };
-    fetchProfessor();
+  // Função centralizada para buscar todos os dados
+  const fetchData = useCallback(async () => {
+    if (!profId) return;
+
+    try {
+      const [profData, avaliacoesData] = await Promise.all([
+        getOneProf(Number(profId)),
+        getAvaliacoesByProf(Number(profId)),
+      ]);
+      setProfessor(profData);
+
+      // Para cada avaliação, busca os dados do usuário
+      const avaliacoesComUsuario = await Promise.all(
+        avaliacoesData.map(async (avaliacao: any) => {
+          try {
+            const usuario = await getOneUser(avaliacao.userId);
+            return {
+              ...avaliacao,
+              nomeUsuario: usuario.nome,
+              fotoUsuario: usuario.fotosrc,
+            };
+          } catch (error) {
+            console.error("Erro ao buscar usuário da avaliação", error);
+            return {
+              ...avaliacao,
+              nomeUsuario: "Usuário",
+              fotoUsuario: "/profileSemFoto/profileSemFoto.jpg",
+            };
+          }
+        })
+      );
+      
+      // Ordena as avaliações da mais recente para a mais antiga
+      avaliacoesComUsuario.sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime());
+
+      setAvaliacoes(avaliacoesComUsuario);
+    } catch (error) {
+      console.error("Erro ao carregar dados do professor:", error);
+    } finally {
+      setLoading(false);
+    }
   }, [profId]);
 
   useEffect(() => {
-    const fetchAvaliacoesEUsers = async () => {
-      if (profId) {
-        try {
-          const response = await getAvaliacoesByProf(Number(profId));
+    fetchData();
+  }, [fetchData]);
 
-          const avaliacoesComUsuario = await Promise.all(
-            response.map(async (avaliacao: any) => {
-              try {
-                const usuario = await getOneUser(avaliacao.userId);
-                return {
-                  ...avaliacao,
-                  nomeUsuario: usuario.nome,
-                  fotoUsuario: usuario.fotosrc,
-                };
-              } catch (error) {
-                console.error("Erro ao buscar usuário da avaliação", error);
-                return {
-                  ...avaliacao,
-                  nomeUsuario: "Usuário",
-                  fotoUsuario: "/profileSemFoto/profileSemFoto.jpg",
-                };
-              }
-            })
-          );
-
-          setAvaliacoes(avaliacoesComUsuario);
-        } catch (error) {
-          console.error("Erro ao buscar avaliações:", error);
-        }
-      }
-    };
-    fetchAvaliacoesEUsers();
-  }, [profId]);
+  if (loading) {
+    return (
+      <>
+        <NavBar />
+        <div className="text-center py-10">Carregando perfil...</div>
+      </>
+    );
+  }
 
   return (
     <>
       <NavBar />
 
       <div className="flex bg-[#EDEDED] min-h-[calc(100vh-60px)] pt-10 pb-10">
-        <div className="w-full max-w-2xl mx-auto relative">
+        <div className="w-fulld max-w-2xl mx-auto relative">
           <button
             onClick={() => router.back()}
-            className="absolute top-16 left-[-60px] w-12 h-12 rounded-full bg-white border border-gray-300 flex items-center justify-center shadow-md cursor-pointer"
+            className="absolute top-8 left-[-60px] md:left-[-80px] w-12 h-12 rounded-full bg-white border flex items-center justify-center shadow-md hover:bg-gray-200 transition"
+            title="Voltar"
           >
             <FaArrowLeft className="text-gray-700 text-xl" />
           </button>
@@ -115,9 +125,9 @@ const PerfilDeProfessor = () => {
                     <div className="flex flex-col gap-4">
                       {avaliacoes
                         .filter((avaliacao) => typeof avaliacao.id === "number" && !isNaN(avaliacao.id))
-                        .map((avaliacao, index) => (
+                        .map((avaliacao) => (
                           <PostCard
-                            key={index}
+                            key={avaliacao.id}
                             id={avaliacao.id}
                             userId={avaliacao.userId}
                             userName={avaliacao.nomeUsuario ?? "Usuário"}
@@ -126,6 +136,7 @@ const PerfilDeProfessor = () => {
                             nomeProfessor={professor?.nome}
                             materia={avaliacao.materia ?? "Matéria não informada"}
                             postContent={avaliacao.avaliacao}
+                            onAction={fetchData} 
                           />
                         ))}
                     </div>

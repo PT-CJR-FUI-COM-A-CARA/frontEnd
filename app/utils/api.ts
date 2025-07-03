@@ -178,3 +178,13 @@ export const getComentariosCount = async (avaliacaoId: number) => {
   const response = await api.get(`/comentarios/count/${avaliacaoId}`);
   return response.data.count; 
 };
+
+export const getOneAvaliacao = async (id: number) => {
+  const response = await api.get(`/avaliacoes/${id}`);
+  return response.data;
+};
+
+export const getComentariosByAvaliacao = async (avaliacaoId: number) => {
+  const response = await api.get(`/comentarios?avaliacaoId=${avaliacaoId}`);
+  return response.data;
+};
