@@ -1,5 +1,6 @@
 import react, {useState} from 'react';
-import { NotificacaoBalao } from '../notificacao_balao/notificação_b';
+import { NotificacaoBalao } from '../notificacao_balao_prof/notificação_b';
+import { NotificacaoBalaoC } from '../notificação_balão_coment/notificacao_bm';
 
 
 export const Notificacao_G = () => {
@@ -8,6 +9,7 @@ export const Notificacao_G = () => {
             <NotificacaoBalao></NotificacaoBalao>
             <NotificacaoBalao></NotificacaoBalao>
             <NotificacaoBalao></NotificacaoBalao>
+            <NotificacaoBalaoC></NotificacaoBalaoC>
 
 
         </div>

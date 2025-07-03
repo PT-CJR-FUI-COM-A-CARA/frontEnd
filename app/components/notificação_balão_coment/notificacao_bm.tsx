@@ -2,7 +2,7 @@ import react from 'react';
 import { FaCommentAlt } from 'react-icons/fa';
 
 
-export const NotificacaoBalao = () => {
+export const NotificacaoBalaoC = () => {
 
     return(
 
@@ -13,7 +13,7 @@ export const NotificacaoBalao = () => {
 
             <div className='flex-1'> 
                 <div className='ml-2 text-black font-semibold'>
-                <p>Um novo professor apareceu!</p>
+                <p>Alguem fez um novo comentario na sua avaliação!</p>
                 </div>
             </div>
 
