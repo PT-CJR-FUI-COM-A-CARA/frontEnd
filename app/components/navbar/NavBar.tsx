@@ -4,12 +4,14 @@ import { useRouter } from 'next/navigation';
 import Botao_Branco from '../botao_branco/Botao_branco';
 import { jwtDecode } from 'jwt-decode';
 import { getOneUser } from '@/app/utils/api';
+import { Notificacao_G } from '../Notificacão/Caixa_grande';
 
 export default function NavBar() {
     const router = useRouter();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userPhoto, setUserPhoto] = useState<string | null>(null);
     const [userID, setUserID] = useState<number | null>(null);
+    const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -65,13 +67,20 @@ export default function NavBar() {
                                 </button>
                             </li>
 
-                            <li>
+                            <li className='relative'>
                                 <button
+                                    onClick={() => setIsOpen(!isOpen)}
                                     aria-label="notificações"
                                     className="p-1 rounded-full hover:scale-110 transition duration-300 cursor-pointer"
                                 >
                                     <img src="/icones-nav/Noti_Icon.png" alt="notificações" className="h-7" />
                                 </button>
+
+                                 {isOpen && (
+                                    <div className="absolute right-0 mt-2 z-50">
+                                       <Notificacao_G />
+                                    </div>
+                                )}
                             </li>
 
                             <li>
