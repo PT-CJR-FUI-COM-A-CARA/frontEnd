@@ -1,12 +1,12 @@
-'use client';
-import React, { useEffect, useState } from 'react';
-import NavBar from './components/navbar/NavBar';
-import CarrosselProfessores from './components/carrossel/carrossel';
-import DropdownOrdenar from './components/ordenar/ordenar';
-import BarraPes from './components/pesquisa/pesquisa';
-import ProfQuadro from './components/quadro/Quadro';
-import { getAllProf } from './utils/api';
-import Link from 'next/link';
+"use client";
+import React, { useEffect, useState } from "react";
+import NavBar from "./components/navbar/NavBar";
+import CarrosselProfessores from "./components/carrossel/carrossel";
+import DropdownOrdenar from "./components/ordenar/ordenar";
+import BarraPes from "./components/pesquisa/pesquisa";
+import ProfQuadro from "./components/quadro/Quadro";
+import { getAllProf } from "./utils/api";
+import Link from "next/link";
 
 const Home = () => {
   type Professor = {
@@ -19,15 +19,16 @@ const Home = () => {
 
   const [professores, setProfessores] = useState<Professor[]>([]);
   const [ordenacao, setOrdenacao] = useState<'nome' | 'departamento' | 'recentes' | 'antigas'>('recentes');
-  const [termoBusca, setTermoBusca] = useState("");
+  const [filtro, setFiltro] = useState<Professor[]>([]);
 
   useEffect(() => {
     const fetchProfessores = async () => {
       try {
         const data = await getAllProf();
         setProfessores(data);
+        setFiltro(data);
       } catch (error) {
-        console.error('Erro ao buscar professores:', error);
+        console.error("Erro ao buscar professores:", error);
       }
     };
 
@@ -37,47 +38,61 @@ const Home = () => {
   const professoresRecentes = professores.slice(-8);
 
   const professoresOrdenados = [...professores].sort((a, b) => {
-    if (ordenacao === 'nome') return a.nome.localeCompare(b.nome);
-    if (ordenacao === 'departamento') return a.departamento.localeCompare(b.departamento);
-    if (ordenacao === 'antigas') return 0;
-    if (ordenacao === 'recentes') return -1;
+    if (ordenacao === "nome") return a.nome.localeCompare(b.nome);
+    if (ordenacao === "departamento") return a.departamento.localeCompare(b.departamento);
+    if (ordenacao === "antigas") return 0;
+    if (ordenacao === "recentes") return -1;
     return 0;
   });
 
-  const professoresFiltrados = professores.filter((prof) =>
-    prof.nome.toLowerCase().startsWith(termoBusca.toLowerCase())
-  );
+  const handleSearch = (searchTerm: string, modo: "nome" | "departamento") => {
+    if (searchTerm === "") {
+      setFiltro(professores);
+      return;
+    }
+
+    const filtrados = professores.filter((p) =>
+      modo === "nome"
+        ? p.nome.toLowerCase().startsWith(searchTerm.toLowerCase())
+        : p.departamento.toLowerCase().startsWith(searchTerm.toLowerCase())
+    );
+    setFiltro(filtrados);
+  };
 
   return (
     <>
       <NavBar />
 
-      {/* Barra de Pesquisa */}
       <div className="flex justify-end px-10 mt-4">
-        <BarraPes onSearch={setTermoBusca} sugestoes={professores.map((p) => p.nome)}/>
+        <BarraPes
+          onSearch={handleSearch}
+          sugestoes={professores.map((p) => ({
+            nome: p.nome,
+            departamento: p.departamento,
+          }))}
+        />
       </div>
 
-      {/* Se estiver pesquisando, mostrar os resultados */}
-      {termoBusca ? (
+      {/* Exibir professores filtrados se o usuário estiver buscando */}
+      {filtro.length < professores.length ? (
         <section className="px-10 py-6">
-          <h2 className="text-3xl font-medium ml-15">Resultado da Pesquisa</h2>
-          {professoresFiltrados.length > 0 ? (
-            <div className="flex flex-wrap justify-center gap-6">
-              {professoresFiltrados.map((prof) => (
+          <h2 className="text-3xl font-medium ml-4">Resultado da Pesquisa</h2>
+          {filtro.length > 0 ? (
+            <div className="flex flex-wrap justify-center gap-6 mt-4">
+              {filtro.map((prof) => (
                 <Link href={`/perfilDeProfessor?id=${prof.id}`} key={prof.id}>
-                <ProfQuadro
-                  key={prof.id}
-                  id={prof.id}
-                  nome={prof.nome}
-                  materia={prof.materia}
-                  departamento={prof.departamento}
-                  fotosrc={prof.fotosrc}
-                />
+                  <ProfQuadro
+                    id={prof.id}
+                    nome={prof.nome}
+                    materia={prof.materia}
+                    departamento={prof.departamento}
+                    fotosrc={prof.fotosrc}
+                  />
                 </Link>
               ))}
             </div>
           ) : (
-            <p className="font-medium ml-15 sm:ml-10 md:ml-15 text-gray-500">Nenhum professor encontrado com esse nome.</p>
+            <p className="font-medium text-gray-500 mt-4 ml-4">Nenhum professor encontrado.</p>
           )}
         </section>
       ) : (
