@@ -5,7 +5,7 @@ import { FaRegComment, FaTrash, FaEdit } from "react-icons/fa";
 import { deleteAvaliacao, getComentariosCount } from "@/app/utils/api";
 import { jwtDecode } from "jwt-decode";
 import Mcomentario from "../m_comentario/M_Comentario";
-import MeditAvaliacao from "@/app/m_editar_avaliacao/M_Editar_Avaliacao";
+import MeditAvaliacao from "@/app/components/m_editar_avaliacao/M_Editar_Avaliacao";
 
 interface PostCardProps {
   id: number;
