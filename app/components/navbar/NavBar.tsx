@@ -21,7 +21,7 @@ export default function NavBar() {
   const notificacaoRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem('token');
 
     if (token) {
       setIsLoggedIn(true);
@@ -35,17 +35,17 @@ export default function NavBar() {
             .then(user => {
               setUserPhoto(user.fotosrc ?? null);
             })
-            .catch(err => console.error("Erro ao buscar foto do usuário:", err));
+            .catch(err => console.error('Erro ao buscar foto do usuário:', err));
 
           // Buscar quantidade de notificações não lidas
           countNaoLidas(id)
             .then(count => {
               setNotificacoesNaoLidas(count);
             })
-            .catch(err => console.error("Erro ao contar notificações não lidas:", err));
+            .catch(err => console.error('Erro ao contar notificações não lidas:', err));
         }
       } catch (error) {
-        console.error("Erro ao decodificar token:", error);
+        console.error('Erro ao decodificar token:', error);
       }
     }
   }, []);
@@ -62,13 +62,13 @@ export default function NavBar() {
     };
 
     if (notificacaoModalOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener('mousedown', handleClickOutside);
     } else {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [notificacaoModalOpen]);
 
@@ -91,6 +91,11 @@ export default function NavBar() {
     setTimeout(() => {
       setIsPopUpOpen(false);
     }, 3000);
+  };
+
+  // Função que será passada para o Notificacao_G para atualizar o contador
+  const atualizarContadorParaZero = () => {
+    setNotificacoesNaoLidas(0);
   };
 
   return (
@@ -133,12 +138,15 @@ export default function NavBar() {
                   )}
                 </button>
 
-                {notificacaoModalOpen && (
+                {notificacaoModalOpen && userID && (
                   <div
                     ref={notificacaoRef}
                     className="absolute right-0 mt-2 z-50 shadow-lg"
                   >
-                    <Notificacao_G />
+                    <Notificacao_G
+                      userId={userID}
+                      onMarcarTodasComoLidas={atualizarContadorParaZero}
+                    />
                   </div>
                 )}
               </li>
@@ -150,7 +158,7 @@ export default function NavBar() {
                   aria-label="Perfil do usuário"
                 >
                   <img
-                    src={userPhoto || "/profileSemFoto/profileSemFoto.jpg"}
+                    src={userPhoto || '/profileSemFoto/profileSemFoto.jpg'}
                     alt="Foto do perfil"
                     className="h-9 w-9 rounded-full object-cover border border-white shadow-sm"
                   />
@@ -169,7 +177,7 @@ export default function NavBar() {
             </ul>
           ) : (
             <ul className="flex flex-col sm:flex-row gap-2 sm:gap-4 mr-15">
-              <li className='flex space-x-3'>
+              <li className="flex space-x-3">
                 <Botao_Branco onClick={() => router.push('/login')} type="button">
                   Login
                 </Botao_Branco>

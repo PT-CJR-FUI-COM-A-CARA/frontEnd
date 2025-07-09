@@ -11,12 +11,15 @@ interface Notificacao {
   lida: boolean;
 }
 
-export const Notificacao_G = () => {
+interface Notificacao_GProps {
+  userId: number;
+  onMarcarTodasComoLidas?: () => void; // callback para avisar o pai
+}
+
+export const Notificacao_G: React.FC<Notificacao_GProps> = ({ userId, onMarcarTodasComoLidas }) => {
   const [notificacoes, setNotificacoes] = useState<Notificacao[]>([]);
   const [loading, setLoading] = useState(true);
   const [unreadCount, setUnreadCount] = useState(0);
-
-  const userId = 1; // Ajuste conforme seu contexto
 
   const fetchNotificacoes = async () => {
     try {
@@ -42,13 +45,18 @@ export const Notificacao_G = () => {
       const atualizadas = notificacoes.map((n) => ({ ...n, lida: true }));
       setNotificacoes(atualizadas);
       setUnreadCount(0);
+
+      // avisar o componente pai (NavBar) para atualizar o contador
+      if (onMarcarTodasComoLidas) {
+        onMarcarTodasComoLidas();
+      }
     } catch (error) {
       console.error('Erro ao marcar todas como lidas:', error);
     }
   };
 
   return (
-    <div className="max-h-96 overflow-y-auto w-[360px] rounded-md p-4 pt-8  bg-[#FFFFFF] relative">
+    <div className="max-h-96 overflow-y-auto w-[360px] rounded-md p-4 pt-8 bg-[#FFFFFF] relative">
       <button
         onClick={handleMarcarTodasComoLidas}
         className="absolute right-4 top-2 text-[#1f3c9d] hover:text-[#050036]"
@@ -67,7 +75,7 @@ export const Notificacao_G = () => {
         <NotificacaoBalao
           key={notificacao.id}
           texto={notificacao.texto}
-          tipo={notificacao.tipo as "NOVO_COMENTARIO" | "NOVO_PROFESSOR"}
+          tipo={notificacao.tipo as 'NOVO_COMENTARIO' | 'NOVO_PROFESSOR'}
           link={notificacao.link}
         />
       ))}
