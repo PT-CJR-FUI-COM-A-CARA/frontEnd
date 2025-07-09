@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { NotificacaoBalao } from '../Notificacão/Notificacao_balao';
-import { getAllNotificacoes, marcarTodasNotificacoesComoLidas } from '../../utils/api';
+import { getNotificacoesByUser, marcarTodasNotificacoesComoLidas } from '../../utils/api';
 import { FaCheck } from 'react-icons/fa';
 
 interface Notificacao {
@@ -13,7 +13,7 @@ interface Notificacao {
 
 interface Notificacao_GProps {
   userId: number;
-  onMarcarTodasComoLidas?: () => void; // callback para avisar o pai
+  onMarcarTodasComoLidas?: () => void;
 }
 
 export const Notificacao_G: React.FC<Notificacao_GProps> = ({ userId, onMarcarTodasComoLidas }) => {
@@ -23,7 +23,7 @@ export const Notificacao_G: React.FC<Notificacao_GProps> = ({ userId, onMarcarTo
 
   const fetchNotificacoes = async () => {
     try {
-      const data: Notificacao[] = await getAllNotificacoes();
+      const data: Notificacao[] = await getNotificacoesByUser(userId);
       setNotificacoes(data);
 
       const unread = data.filter((n) => !n.lida).length;
@@ -37,7 +37,7 @@ export const Notificacao_G: React.FC<Notificacao_GProps> = ({ userId, onMarcarTo
 
   useEffect(() => {
     fetchNotificacoes();
-  }, []);
+  }, [userId]);
 
   const handleMarcarTodasComoLidas = async () => {
     try {
@@ -46,7 +46,6 @@ export const Notificacao_G: React.FC<Notificacao_GProps> = ({ userId, onMarcarTo
       setNotificacoes(atualizadas);
       setUnreadCount(0);
 
-      // avisar o componente pai (NavBar) para atualizar o contador
       if (onMarcarTodasComoLidas) {
         onMarcarTodasComoLidas();
       }
@@ -77,12 +76,15 @@ export const Notificacao_G: React.FC<Notificacao_GProps> = ({ userId, onMarcarTo
           texto={notificacao.texto}
           tipo={notificacao.tipo as 'NOVO_COMENTARIO' | 'NOVO_PROFESSOR'}
           link={notificacao.link}
+          lida={notificacao.lida}
         />
       ))}
 
-      <div className="mt-2 text-xs text-gray-500 text-center">
-        {unreadCount > 0 ? `${unreadCount} não lidas` : 'Todas lidas 🎉'}
-      </div>
+      {notificacoes.length > 0 && (
+        <div className="mt-2 text-xs text-gray-500 text-center">
+          {unreadCount > 0 ? `${unreadCount} não lidas` : 'Todas lidas 🎉'}
+        </div>
+      )}
     </div>
   );
 };

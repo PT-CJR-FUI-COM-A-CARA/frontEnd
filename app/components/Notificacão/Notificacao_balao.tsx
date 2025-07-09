@@ -5,9 +5,10 @@ type NotificacaoProps = {
   texto: string;
   tipo: 'NOVO_COMENTARIO' | 'NOVO_PROFESSOR';
   link?: string;
+  lida?: boolean; // nova prop opcional
 };
 
-export const NotificacaoBalao: React.FC<NotificacaoProps> = ({ texto, tipo, link }) => {
+export const NotificacaoBalao: React.FC<NotificacaoProps> = ({ texto, tipo, link, lida = false }) => {
   const getIcon = () => {
     if (tipo === 'NOVO_COMENTARIO') return <FaCommentAlt size={20} />;
     if (tipo === 'NOVO_PROFESSOR') return <FaLightbulb size={20} />;
@@ -16,6 +17,9 @@ export const NotificacaoBalao: React.FC<NotificacaoProps> = ({ texto, tipo, link
 
   const Wrapper = link ? 'a' : 'div';
 
+  // Definindo a cor do texto: cinza se lida, preto se não lida
+  const textoCorClass = lida ? 'text-gray-500 font-normal' : 'text-black font-semibold';
+
   return (
     <Wrapper
       href={link}
@@ -23,7 +27,7 @@ export const NotificacaoBalao: React.FC<NotificacaoProps> = ({ texto, tipo, link
     >
       <div className="text-gray-700 mt-1">{getIcon()}</div>
       <div className="flex-1">
-        <div className="ml-2 text-black font-semibold">
+        <div className={`ml-2 ${textoCorClass}`}>
           <p>{texto}</p>
         </div>
       </div>

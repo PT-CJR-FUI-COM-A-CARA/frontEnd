@@ -100,11 +100,6 @@ export const getComentariosByAvaliacao = async (avaliacaoId: number) => {
   return response.data;
 };
 
-export const getAllNotificacoes = async () => {
-  const response = await api.get('/notificacoes');
-  return response.data;
-};
-
 export const getNotificacoesByUser = async (userId: number) => {
   const response = await api.get(`/notificacoes/user/${userId}`);
   return response.data;
