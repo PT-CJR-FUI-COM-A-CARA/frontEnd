@@ -188,3 +188,39 @@ export const getComentariosByAvaliacao = async (avaliacaoId: number) => {
   const response = await api.get(`/comentarios?avaliacaoId=${avaliacaoId}`);
   return response.data;
 };
+
+export const getAllNotificacoes = async () => {
+  const response = await api.get('/notificacoes');
+  return response.data;
+};
+
+export const getNotificacoesByUser = async (userId: number) => {
+  const response = await api.get(`/notificacoes/user/${userId}`);
+  return response.data;
+};
+
+export const createNotificacao = async (notificacao: {
+  usersId: number;
+  texto: string;
+  link?: string;
+  tipo: 'NOVO_COMENTARIO' | 'NOVO_PROFESSOR';
+  lida?: boolean;
+}) => {
+  const response = await api.post('/notificacoes', notificacao);
+  return response.data;
+};
+
+export const deleteNotificacao = async (id: number) => {
+  const response = await api.delete(`/notificacoes/${id}`);
+  return response.data;
+};
+
+export const marcarNotificacaoComoLida = async (id: number) => {
+  const response = await api.patch(`/notificacoes/${id}`, { lida: true });
+  return response.data;
+};
+
+export const countNaoLidas = async (userId: number) => {
+  const response = await api.get(`/notificacoes/count/nao-lidas/${userId}`);
+  return response.data;
+};
