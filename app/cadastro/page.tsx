@@ -11,19 +11,20 @@ import PopUp from '../components/popup/PopUp';
 export default function CadastroPage() {
   const [senha, setSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
-  const [erro, setErro] = useState('');
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [curso, setCurso] = useState('');
   const [departamento, setDepartamento] = useState('');
 
-  //POP-UP
-  const [popupAberto, setPopupAberto] = useState(false);
+  const [erroNome, setErroNome] = useState('');
+  const [erroEmail, setErroEmail] = useState('');
+  const [erroSenha, setErroSenha] = useState('');
+  const [erroConfirmarSenha, setErroConfirmarSenha] = useState('');
+  const [erroCampos, setErroCampos] = useState('');
 
-  //ROTA
+  const [popupAberto, setPopupAberto] = useState(false);
   const router = useRouter();
 
-  //VISUALIZAÇÃO DA SENHA
   const [senhaVisivel, setSenhaVisivel] = useState(false);
   const [confirmarSenhaVisivel, setConfirmarSenhaVisivel] = useState(false);
 
@@ -31,7 +32,6 @@ export default function CadastroPage() {
     try {
       await registerUser(nome, email, senha, curso, departamento);
       setPopupAberto(true);
-      setErro('');
 
       setTimeout(() => {
         router.push('/login');
@@ -39,7 +39,6 @@ export default function CadastroPage() {
 
     } catch (error) {
       console.error('Erro ao registrar usuário:', error);
-      setErro('Erro ao registrar usuário. Por favor, tente novamente.');
     }
   };
 
@@ -48,40 +47,55 @@ export default function CadastroPage() {
     return regex.test(senha);
   };
 
+  const validarNome = (nome: string) => {
+    const regex = /^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/;
+    return regex.test(nome.trim());
+  };
+
   const validarEmail = (email: string) => {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return regex.test(email);
+    const regexFormato = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return regexFormato.test(email.trim());
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validarSenhaSegura(senha)) {
-      setErro('A senha deve ter pelo menos 8 caracteres, incluindo uma letra maiúscula, uma letra minúscula, um número e um caractere especial.');
-      return;
-    }
-
-    if (senha !== confirmarSenha) {
-      setErro('As senhas não coincidem.');
-      return;
-    }
+    setErroNome('');
+    setErroEmail('');
+    setErroSenha('');
+    setErroConfirmarSenha('');
+    setErroCampos('');
 
     if (!nome || !email || !curso || !departamento || !senha || !confirmarSenha) {
-      setErro('Por favor, preencha todos os campos.');
+      setErroCampos('Por favor, preencha todos os campos.');
+      return;
+    }
+
+    if (!validarNome(nome)) {
+      setErroNome('O nome deve conter apenas letras e espaços.');
       return;
     }
 
     if (!validarEmail(email)) {
-      setErro('Por favor, insira um email válido.');
+      setErroEmail('Por favor, insira um email válido.');
+      return;
+    }
+
+    if (!validarSenhaSegura(senha)) {
+      setErroSenha('A senha deve ter pelo menos 8 caracteres, incluindo uma letra maiúscula, uma letra minúscula, um número e um caractere especial.');
+      return;
+    }
+
+    if (senha !== confirmarSenha) {
+      setErroConfirmarSenha('As senhas não coincidem.');
       return;
     }
 
     await lendoRegister();
-  }
+  };
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen">
-      {/* IMAGEM JACARÉ */}
       <div className="w-full md:w-1/2 bg-yellow-100 flex justify-center items-center">
         <img
           src="logo/jacareCadastro.png"
@@ -90,13 +104,12 @@ export default function CadastroPage() {
         />
       </div>
 
-      {/* FORMULÁRIO P/ CADASTRO DO USUÁRIO */}
       <div className="w-full md:w-1/2 bg-[#EDEDED] flex flex-col justify-center items-center p-8">
-
         <img
           src="logo/Logomarca 2.svg"
           alt="Logo"
-          className='w-100 mb-6' />
+          className='w-100 mb-6'
+        />
 
         <form className="w-full max-w-sm space-y-4" onSubmit={handleSubmit}>
 
@@ -105,8 +118,9 @@ export default function CadastroPage() {
             placeholder="Nome"
             value={nome}
             onChange={(e) => setNome(e.target.value)}
-            className="h-12  w-full p-2 bg-white rounded-xl placeholder-gray-500 text-gray-700"
+            className="h-12 w-full p-2 bg-white rounded-xl placeholder-gray-500 text-gray-700"
           />
+          {erroNome && <p className="text-red-500 text-sm mt-1">{erroNome}</p>}
 
           <input
             type="email"
@@ -115,9 +129,9 @@ export default function CadastroPage() {
             onChange={(e) => setEmail(e.target.value)}
             className="h-12 w-full p-2 bg-white rounded-xl placeholder-gray-500 text-gray-700"
           />
+          {erroEmail && <p className="text-red-500 text-sm mt-1">{erroEmail}</p>}
 
-          {/* CAMPO SENHA COM OLHINHO */}
-          <div className= "relative">
+          <div className="relative">
             <input
               type={senhaVisivel ? "text" : "password"}
               placeholder="Senha"
@@ -133,8 +147,8 @@ export default function CadastroPage() {
               {senhaVisivel ? <FaEyeSlash /> : <FaEye />}
             </button>
           </div>
+          {erroSenha && <p className="text-red-500 text-sm mt-1">{erroSenha}</p>}
 
-          {/* CAMPO CONFIRMAR SENHA COM OLHINHO */}
           <div className="relative">
             <input
               type={confirmarSenhaVisivel ? "text" : "password"}
@@ -151,6 +165,7 @@ export default function CadastroPage() {
               {confirmarSenhaVisivel ? <FaEyeSlash /> : <FaEye />}
             </button>
           </div>
+          {erroConfirmarSenha && <p className="text-red-500 text-sm mt-1">{erroConfirmarSenha}</p>}
 
           <input
             type="text"
@@ -168,7 +183,7 @@ export default function CadastroPage() {
             className="h-12 w-full p-2 bg-white rounded-xl placeholder-gray-500 text-gray-700"
           />
 
-          {erro && <p className="text-red-500 text-sm">{erro}</p>}
+          {erroCampos && <p className="text-red-500 text-sm mt-1">{erroCampos}</p>}
 
           <PopUp 
           isOpen={popupAberto}
@@ -176,15 +191,14 @@ export default function CadastroPage() {
           description="Redirecionando para o login..."
           />
 
-          <div className="w-full flex justify-center mt-6 space-x-20">
+          <div className="w-full flex justify-center mt-8 space-x-20">
             <Botão type="submit">
               Criar Conta
             </Botão>
-          </div>
 
-          <div className="text-center text-[#050036] text-sm font-medium">
-              Já possui uma conta?
-              <a href="/login" className="login-link font-semibold hover:underline"> Login</a>
+            <Botão onClick={() => router.push('/login')}>
+              Login
+            </Botão>
           </div>
         </form>
       </div>
