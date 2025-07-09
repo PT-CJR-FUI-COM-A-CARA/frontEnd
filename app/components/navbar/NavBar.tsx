@@ -1,11 +1,12 @@
 'use client'
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Botao_Branco from '../botao_branco/Botao_branco';
 import { jwtDecode } from 'jwt-decode';
-import { getOneUser } from '@/app/utils/api';
+import { getOneUser, countNaoLidas } from '@/app/utils/api';
 import MenuModal from '../menu_modal/MenuModal';
-import PopUp from '../popup/PopUp'; 
+import PopUp from '../popup/PopUp';
+import { Notificacao_G } from '../Notificacão/Caixa_grande';
 
 export default function NavBar() {
   const router = useRouter();
@@ -13,12 +14,14 @@ export default function NavBar() {
   const [userPhoto, setUserPhoto] = useState<string | null>(null);
   const [userID, setUserID] = useState<number | null>(null);
   const [isMenuModalOpen, setIsMenuModalOpen] = useState(false);
-
-  // Novo estado para o popup
   const [isPopUpOpen, setIsPopUpOpen] = useState(false);
+  const [notificacaoModalOpen, setNotificacaoModalOpen] = useState(false);
+  const [notificacoesNaoLidas, setNotificacoesNaoLidas] = useState<number>(0);
+
+  const notificacaoRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem('token');
 
     if (token) {
       setIsLoggedIn(true);
@@ -32,19 +35,48 @@ export default function NavBar() {
             .then(user => {
               setUserPhoto(user.fotosrc ?? null);
             })
-            .catch(err => console.error("Erro ao buscar foto do usuário:", err));
+            .catch(err => console.error('Erro ao buscar foto do usuário:', err));
+
+          // Buscar quantidade de notificações não lidas
+          countNaoLidas(id)
+            .then(count => {
+              setNotificacoesNaoLidas(count);
+            })
+            .catch(err => console.error('Erro ao contar notificações não lidas:', err));
         }
       } catch (error) {
-        console.error("Erro ao decodificar token:", error);
+        console.error('Erro ao decodificar token:', error);
       }
     }
   }, []);
+
+  // Fechar modal de notificação ao clicar fora
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        notificacaoRef.current &&
+        !notificacaoRef.current.contains(event.target as Node)
+      ) {
+        setNotificacaoModalOpen(false);
+      }
+    };
+
+    if (notificacaoModalOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [notificacaoModalOpen]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     setIsLoggedIn(false);
     router.push('/login');
-  }
+  };
 
   const handleOpenMenuModal = () => {
     setIsMenuModalOpen(true);
@@ -54,12 +86,16 @@ export default function NavBar() {
     setIsMenuModalOpen(false);
   };
 
-  // Função que será passada ao MenuModal
   const handleEnviarAvaliacao = () => {
     setIsPopUpOpen(true);
     setTimeout(() => {
       setIsPopUpOpen(false);
     }, 3000);
+  };
+
+  // Função que será passada para o Notificacao_G para atualizar o contador
+  const atualizarContadorParaZero = () => {
+    setNotificacoesNaoLidas(0);
   };
 
   return (
@@ -88,13 +124,31 @@ export default function NavBar() {
                 </button>
               </li>
 
-              <li>
+              <li className="relative">
                 <button
                   aria-label="notificações"
+                  onClick={() => setNotificacaoModalOpen(!notificacaoModalOpen)}
                   className="p-1 rounded-full hover:scale-110 transition duration-300 cursor-pointer"
                 >
                   <img src="/icones-nav/Noti_Icon.png" alt="notificações" className="h-7" />
+                  {notificacoesNaoLidas > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1">
+                      {notificacoesNaoLidas}
+                    </span>
+                  )}
                 </button>
+
+                {notificacaoModalOpen && userID && (
+                  <div
+                    ref={notificacaoRef}
+                    className="absolute right-0 mt-2 z-50 shadow-lg"
+                  >
+                    <Notificacao_G
+                      userId={userID}
+                      onMarcarTodasComoLidas={atualizarContadorParaZero}
+                    />
+                  </div>
+                )}
               </li>
 
               <li>
@@ -104,7 +158,7 @@ export default function NavBar() {
                   aria-label="Perfil do usuário"
                 >
                   <img
-                    src={userPhoto || "/profileSemFoto/profileSemFoto.jpg"}
+                    src={userPhoto || '/profileSemFoto/profileSemFoto.jpg'}
                     alt="Foto do perfil"
                     className="h-9 w-9 rounded-full object-cover border border-white shadow-sm"
                   />
@@ -123,7 +177,7 @@ export default function NavBar() {
             </ul>
           ) : (
             <ul className="flex flex-col sm:flex-row gap-2 sm:gap-4 mr-15">
-              <li className='flex space-x-3'>
+              <li className="flex space-x-3">
                 <Botao_Branco onClick={() => router.push('/login')} type="button">
                   Login
                 </Botao_Branco>
@@ -139,10 +193,10 @@ export default function NavBar() {
       <MenuModal
         isOpen={isMenuModalOpen}
         onClose={handleCloseMenuModal}
-        onEnviarAvaliacao={handleEnviarAvaliacao} // <<< Passa a função aqui
+        onEnviarAvaliacao={handleEnviarAvaliacao}
       />
 
-      <PopUp 
+      <PopUp
         isOpen={isPopUpOpen}
         title="Avaliação enviada com sucesso!"
         description="Obrigado pela sua contribuição 🎉"
