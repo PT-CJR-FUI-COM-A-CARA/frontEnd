@@ -1,47 +1,39 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'http://localhost:3001',
-    headers: {
+  baseURL: 'http://localhost:3001',
+  headers: {
     'Content-Type': 'application/json',
   },
 });
 
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("token");
-    console.log("Token", token);
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
-);
+  return config;
+});
 
-export const getAllUsers = async() => {
-  const response = await api.get("/users") 
+export const getAllUsers = async () => {
+  const response = await api.get("/users");
+  return response.data;
+};
 
-  return response.data
-}
+export const getOneUser = async (id: number) => {
+  const response = await api.get(`/users/${id}`);
+  return response.data;
+};
 
-export const getOneUser = async(id: number) => {
-    const response = await api.get(`/users/${id}`)
+export const getAllProf = async () => {
+  const response = await api.get("/professores");
+  return response.data;
+};
 
-    return response.data
-} 
-
-export const getAllProf = async() => {
-    const response = await api.get("/professores")
-
-    return response.data
-}
-
-export const getOneProf = async(id: number) => {
-    const response = await api.get(`/professores/${id}`)
-
-    return response.data
-}
-
+export const getOneProf = async (id: number) => {
+  const response = await api.get(`/professores/${id}`);
+  return response.data;
+};
 
 export const getAvaliacoesByUser = async (userId: number) => {
   const response = await api.get("/avaliacoes");
@@ -53,130 +45,49 @@ export const getAvaliacoesByProf = async (profId: number) => {
   return response.data.filter((avaliacao: any) => avaliacao.profId === profId);
 };
 
-export const registerUser = async(nome:string, email:string, senha:string, curso: string, departamento: string) => {
-    try{
-            const response = await api.post("/users", {
-            nome, 
-            email,
-            senha,
-            curso,
-            departamento,
-            });
-            return response.data
-            
-        }
+export const registerUser = async (nome: string, email: string, senha: string, curso: string, departamento: string) => {
+  const response = await api.post("/users", { nome, email, senha, curso, departamento });
+  return response.data;
+};
 
-    catch(error){
-        if (axios.isAxiosError(error)){
-            console.error(error.response?.data || error.message)
-        }
-    }
-}
-
-export const loginUser = async(email:string, senha:string) => {
-    try{
-        const response = await api.post("/login", {
-            email,
-            senha,
-        });
-
-        return response.data
-    }
-
-    catch(error){
-        if (axios.isAxiosError(error)){
-            console.error(error.response?.data || error.message)
-        }
-    }
-}
+export const loginUser = async (email: string, senha: string) => {
+  const response = await api.post("/login", { email, senha });
+  return response.data;
+};
 
 export const deleteAvaliacao = async (id: number) => {
-  try {
-    const response = await api.delete(`/avaliacoes/${id}`);
-    return response.data;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error(error.response?.data || error.message);
-    }
-  }
+  const response = await api.delete(`/avaliacoes/${id}`);
+  return response.data;
 };
 
 export const updateAvaliacao = async (id: number, avaliacao: string) => {
-  try {
-    const response = await api.patch(`/avaliacoes/${id}`, { avaliacao });
-    return response.data;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error(error.response?.data || error.message);
-    }
-    throw error;
-  }
+  const response = await api.patch(`/avaliacoes/${id}`, { avaliacao });
+  return response.data;
 };
 
-export const postAvaliacao = async(avaliacao:string, materia:string, userId: number, profId: number) => {
-    try{
-            const response = await api.post("/avaliacoes", {
-            avaliacao, 
-            materia,
-            userId,
-            profId,
-            });
-            return response.data
-            
-        }
-
-    catch(error){
-        if (axios.isAxiosError(error)){
-            console.error(error.response?.data || error.message)
-        }
-    }
-}
+export const postAvaliacao = async (avaliacao: string, materia: string, userId: number, profId: number) => {
+  const response = await api.post("/avaliacoes", { avaliacao, materia, userId, profId });
+  return response.data;
+};
 
 export const deleteComentario = async (id: number) => {
-  try {
-    const response = await api.delete(`/comentarios/${id}`);
-    return response.data;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error(error.response?.data || error.message);
-    }
-  }
+  const response = await api.delete(`/comentarios/${id}`);
+  return response.data;
 };
 
 export const updateComentario = async (id: number, conteudo: string) => {
-  try {
-    const response = await api.patch(`/comentarios/${id}`, {
-      conteudo,
-    });
-    return response.data;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error(error.response?.data || error.message);
-    }
-  }
+  const response = await api.patch(`/comentarios/${id}`, { conteudo });
+  return response.data;
 };
 
-export const postComentario = async(conteudo:string, usersId:number, avaliacaoId: number) => {
-    try{
-            const response = await api.post("/comentarios", {
-            conteudo, 
-            usersId,
-            avaliacaoId,
-            });
-            return response.data
-            
-        }
-
-    catch(error){
-        if (axios.isAxiosError(error)){
-            console.error(error.response?.data || error.message)
-        }
-    }
-}
+export const postComentario = async (conteudo: string, usersId: number, avaliacaoId: number) => {
+  const response = await api.post("/comentarios", { conteudo, usersId, avaliacaoId });
+  return response.data;
+};
 
 export const getComentariosCount = async (avaliacaoId: number) => {
   const response = await api.get(`/comentarios/count/${avaliacaoId}`);
-  return response.data.count; 
+  return response.data.count;
 };
 
 export const getOneAvaliacao = async (id: number) => {
@@ -210,13 +121,8 @@ export const createNotificacao = async (notificacao: {
   return response.data;
 };
 
-export const deleteNotificacao = async (id: number) => {
-  const response = await api.delete(`/notificacoes/${id}`);
-  return response.data;
-};
-
-export const marcarNotificacaoComoLida = async (id: number) => {
-  const response = await api.patch(`/notificacoes/${id}`, { lida: true });
+export const marcarTodasNotificacoesComoLidas = async (userId: number) => {
+  const response = await api.patch(`/notificacoes/marcar-todas-lidas/${userId}`);
   return response.data;
 };
 

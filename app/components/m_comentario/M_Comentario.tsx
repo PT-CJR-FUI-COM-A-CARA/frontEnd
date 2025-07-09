@@ -2,7 +2,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import { Bold, Italic } from "lucide-react";
 import { jwtDecode } from "jwt-decode";
-import { postComentario } from "@/app/utils/api";
+import { postComentario, createNotificacao, getOneAvaliacao } from "@/app/utils/api";
 import Botao from "../botao_azul/Botao_Azul";
 
 interface ModalProps {
@@ -75,8 +75,26 @@ const Mcomentario: React.FC<ModalProps> = ({ isOpen, onCloseAction, avaliacaoId 
 
     try {
       console.log("Enviando comentário:", { conteudo: conteudoRaw, userId, avaliacaoId });
+
+      // Envia comentário
       await postComentario(conteudoRaw, userId, avaliacaoId);
-      console.log("Comentário enviado com sucesso!");
+
+      // Busca dono da avaliação
+      const avaliacao = await getOneAvaliacao(avaliacaoId);
+      const donoId = avaliacao.userId;
+
+      // Cria notificação se não for o próprio usuário comentando
+      if (donoId && donoId !== userId) {
+        await createNotificacao({
+          usersId: donoId,
+          texto: "Você recebeu um novo comentário na sua avaliação!",
+          tipo: "NOVO_COMENTARIO",
+          link: `/avaliacao/${avaliacaoId}`,
+        });
+        console.log("Notificação enviada para o dono da avaliação!");
+      }
+
+      console.log("Comentário e notificação enviados com sucesso!");
       onCloseAction();
     } catch (error) {
       console.error("Erro ao enviar comentário:", error);
@@ -104,9 +122,7 @@ const Mcomentario: React.FC<ModalProps> = ({ isOpen, onCloseAction, avaliacaoId 
               <button
                 type="button"
                 onClick={toggleBold}
-                className={`p-1 rounded ${
-                  negritoAtivo ? "bg-blue-100 text-blue-600" : "text-[#050036]"
-                }`}
+                className={`p-1 rounded ${negritoAtivo ? "bg-blue-100 text-blue-600" : "text-[#050036]"}`}
                 aria-label="Negrito"
               >
                 <Bold className="w-5 h-5" />
@@ -114,9 +130,7 @@ const Mcomentario: React.FC<ModalProps> = ({ isOpen, onCloseAction, avaliacaoId 
               <button
                 type="button"
                 onClick={toggleItalic}
-                className={`p-1 rounded ${
-                  italicoAtivo ? "bg-blue-100 text-blue-600" : "text-[#050036]"
-                }`}
+                className={`p-1 rounded ${italicoAtivo ? "bg-blue-100 text-blue-600" : "text-[#050036]"}`}
                 aria-label="Itálico"
               >
                 <Italic className="w-5 h-5" />
