@@ -125,3 +125,19 @@ export const countNaoLidas = async (userId: number) => {
   const response = await api.get(`/notificacoes/count/nao-lidas/${userId}`);
   return response.data;
 };
+
+export const updateUser = async (id: number, userData: {
+  nome?: string;
+  email?: string;
+  curso?: string;
+  departamento?: string;
+  fotosrc?: string; 
+}) => {
+  const response = await api.patch(`/users/${id}`, userData);
+  return response.data;
+};
+
+export const changePassword = async (id: number, senhaAntiga: string, novaSenha: string) => {
+  const response = await api.patch(`/users/change-password/${id}`, { senhaAntiga, novaSenha });
+  return response.data;
+};

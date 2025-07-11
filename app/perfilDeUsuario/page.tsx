@@ -5,6 +5,7 @@ import NavBar from "../components/navbar/NavBar";
 import PostCard from "../components/post_card/PostCard";
 import { getOneUser, getAvaliacoesByUser, getOneProf } from "../utils/api";
 import { FaArrowLeft } from "react-icons/fa";
+import ModalEditarPerfil from "../components/m_editar_perfil/M_Editar_Perfil";
 
 const PerfilDeUsuario = () => {
   const router = useRouter();
@@ -14,6 +15,7 @@ const PerfilDeUsuario = () => {
   const [usuario, setUsuario] = useState<any>(null);
   const [avaliacoes, setAvaliacoes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fetchData = useCallback(async () => {
     if (!userId) return;
@@ -90,7 +92,10 @@ const PerfilDeUsuario = () => {
                   className="w-28 h-28 md:w-32 md:h-32 rounded-full object-cover border-4 border-white shadow-lg -mt-16"
                 />
                 <div className="flex flex-col items-center md:items-end gap-2 mt-2 md:mt-4">
-                  <button className="bg-[#050036] text-white text-sm px-5 py-2 rounded-full hover:scale-105 transition">
+                  <button 
+                    onClick={() => setIsModalOpen(true)}
+                    className="bg-[#050036] text-white text-sm px-5 py-2 rounded-full hover:scale-105 transition"
+                  >
                     Editar Perfil
                   </button>
                   {/* <button className="bg-red-500 text-white text-sm px-5 py-2 rounded-full hover:scale-105 transition">
@@ -154,6 +159,15 @@ const PerfilDeUsuario = () => {
           </div>
         </div>
       </div>
+      {isModalOpen && (
+        <ModalEditarPerfil 
+          usuario={usuario} 
+          onClose={() => setIsModalOpen(false)}
+          onSave={() => {
+            fetchData(); // Recarrega os dados do perfil após salvar
+          }}
+        />
+      )}
     </>
   );
 };
