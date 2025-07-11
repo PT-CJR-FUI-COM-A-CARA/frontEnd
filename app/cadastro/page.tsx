@@ -6,6 +6,7 @@ import Botão from '../components/botao_azul/Botao_Azul';
 import Popup from '../components/popup/PopUp';
 import { registerUser } from '../utils/api';
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useEffect } from 'react';
 
 export default function CadastroPage() {
   const [senha, setSenha] = useState('');
@@ -25,6 +26,14 @@ export default function CadastroPage() {
   //VISUALIZAÇÃO DA SENHA
   const [senhaVisivel, setSenhaVisivel] = useState(false);
   const [confirmarSenhaVisivel, setConfirmarSenhaVisivel] = useState(false);
+
+  useEffect(() => {
+  if (senha && !validarSenhaSegura(senha)) {
+    setErro('A senha deve ter pelo menos 8 caracteres, incluindo uma letra maiúscula, uma letra minúscula, um número e um caractere especial.');
+  } else {
+    setErro('');
+  }
+}, [senha]);
 
   const lendoRegister = async () => {
     try {
@@ -55,10 +64,14 @@ export default function CadastroPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validarSenhaSegura(senha)) {
-      setErro('A senha deve ter pelo menos 8 caracteres, incluindo uma letra maiúscula, uma letra minúscula, um número e um caractere especial.');
+    if (erro === 'a'){
       return;
     }
+
+    //if (!validarSenhaSegura(senha)) {
+      //setErro('A senha deve ter pelo menos 8 caracteres, incluindo uma letra maiúscula, uma letra minúscula, um número e um caractere especial.');
+      //return;
+    //}
 
     if (senha !== confirmarSenha) {
       setErro('As senhas não coincidem.');
@@ -177,8 +190,8 @@ export default function CadastroPage() {
           </Popup>
 
           <div className="w-full flex justify-center mt-8 space-x-20">
-            <Botão type="submit">
-              Criar Conta
+            <Botão type="submit"  >
+                Criar Conta
             </Botão>
 
             <Botão onClick={() => router.push('/login')}>

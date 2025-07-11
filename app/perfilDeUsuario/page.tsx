@@ -6,6 +6,7 @@ import PostCard from '../components/post_card/PostCard';
 import { useRouter } from 'next/navigation';
 import { getOneUser, getAvaliacoesByUser, getOneProf } from '../utils/api';
 import { jwtDecode } from 'jwt-decode';
+import { Footer } from "../components/footer/Footer";
 
 const PerfilDeUsuario = () => {
     const router = useRouter();
@@ -178,6 +179,7 @@ const PerfilDeUsuario = () => {
                     </div>
                 </div>
             </div>
+            <Footer />
         </>
     );
 };

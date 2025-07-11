@@ -5,6 +5,7 @@ import CarrosselProfessores from './components/carrossel/carrossel'
 import DropdownOrdenar from './components/ordenar/ordenar';
 import { useState } from 'react';
 import { getAllProf } from './utils/api';
+import { Footer } from './components/footer/Footer';
 
 
 const Home = () => {
@@ -57,6 +58,7 @@ const Home = () => {
     </div>
     <CarrosselProfessores professores={professoresOrdenados} />
    </section>
+   <Footer></Footer>
   </>
   )
 }

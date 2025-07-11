@@ -5,6 +5,7 @@ import { FaBuilding, FaBook, FaArrowLeft } from "react-icons/fa";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getOneProf, getAvaliacoesByProf, getOneUser } from "../utils/api";
 import PostCard from "../components/post_card/PostCard";
+import { Footer } from "../components/footer/Footer";
 
 const PerfilDeProfessor = () => {
   const router = useRouter();
@@ -142,6 +143,7 @@ const PerfilDeProfessor = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </>
   );
 };
