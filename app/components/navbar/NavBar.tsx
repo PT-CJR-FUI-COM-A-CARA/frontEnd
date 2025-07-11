@@ -3,12 +3,16 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Botao_Branco from '../botao_branco/Botao_branco';
 import { jwtDecode } from 'jwt-decode';
-import { getOneUser, countNaoLidas } from '@/app/utils/api';
+import { getOneUser, countNaoLidas, profileImageLoader } from '@/app/utils/api';
 import MenuModal from '../menu_modal/MenuModal';
 import PopUp from '../popup/PopUp';
 import { Notificacao_G } from '../Notificacão/Caixa_grande';
 
-export default function NavBar() {
+interface NavBarProps {
+  usuario?: any; 
+}
+
+export default function NavBar({ usuario: usuarioProp }: NavBarProps) {
   const router = useRouter();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userPhoto, setUserPhoto] = useState<string | null>(null);
@@ -21,29 +25,41 @@ export default function NavBar() {
   const notificacaoRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-
-    if (token) {
+    if (usuarioProp) {
       setIsLoggedIn(true);
-      try {
-        const decoded: { sub?: string } = jwtDecode(token);
-        if (decoded.sub) {
-          const id = Number(decoded.sub);
-          setUserID(id);
+      setUserID(usuarioProp.id);
+      setUserPhoto(usuarioProp.fotosrc ?? null);
+      
+      countNaoLidas(usuarioProp.id)
+        .then(count => setNotificacoesNaoLidas(count))
+        .catch(err => console.error('Erro ao contar notificações:', err));
 
-          getOneUser(id)
-            .then(user => setUserPhoto(user.fotosrc ?? null))
-            .catch(err => console.error('Erro ao buscar foto do usuário:', err));
+    } else {
+      const token = localStorage.getItem('token');
+      if (token) {
+        setIsLoggedIn(true);
+        try {
+          const decoded: { sub?: string } = jwtDecode(token);
+          if (decoded.sub) {
+            const id = Number(decoded.sub);
+            setUserID(id);
 
-          countNaoLidas(id)
-            .then(count => setNotificacoesNaoLidas(count))
-            .catch(err => console.error('Erro ao contar notificações não lidas:', err));
+            getOneUser(id)
+              .then(user => setUserPhoto(user.fotosrc ?? null))
+              .catch(err => console.error('Erro ao buscar foto:', err));
+
+            countNaoLidas(id)
+              .then(count => setNotificacoesNaoLidas(count))
+              .catch(err => console.error('Erro ao contar notificações:', err));
+          }
+        } catch (error) {
+          console.error('Erro ao decodificar token:', error);
         }
-      } catch (error) {
-        console.error('Erro ao decodificar token:', error);
+      } else {
+        setIsLoggedIn(false);
       }
     }
-  }, []);
+  }, [usuarioProp]); 
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -141,9 +157,10 @@ export default function NavBar() {
                 aria-label="Perfil"
               >
                 <img
-                  src={userPhoto || '/profileSemFoto/profileSemFoto.jpg'}
+                  src={profileImageLoader({ src: userPhoto })}
                   alt="Perfil"
                   className="h-8 w-8 rounded-full object-cover border border-white"
+                  onError={(e) => { (e.target as HTMLImageElement).src = "/profileSemFoto/profileSemFoto.jpg"; }}
                 />
               </button>
             </li>

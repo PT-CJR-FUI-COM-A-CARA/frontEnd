@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FaArrowLeft, FaTimes, FaCamera } from 'react-icons/fa';
-import { updateUser, changePassword } from '../../utils/api'; 
+import { updateUser, changePassword, uploadPhoto, profileImageLoader } from '../../utils/api'; 
 import { GiKey } from "react-icons/gi";
 
 const validarSenhaSegura = (senha: string) => {
@@ -20,22 +20,24 @@ const validarEmail = (email: string) => {
 interface ModalEditarPerfilProps {
   usuario: any;
   onClose: () => void;
-  onSave: () => void;
+  onSave: (updatedUser: any) => void; 
 }
 
 const ModalEditarPerfil: React.FC<ModalEditarPerfilProps> = ({ usuario, onClose, onSave }) => {
   const [view, setView] = useState<'profile' | 'password'>('profile');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [profileData, setProfileData] = useState({
-    nome: usuario?.nome || '',
-    email: usuario?.email || '',
-    curso: usuario?.curso || '',
-    departamento: usuario?.departamento || '',
+    nome: '',
+    email: '',
+    curso: '',
+    departamento: '',
   });
-  const [fotoPreview, setFotoPreview] = useState<string | null>(usuario?.fotosrc || null);
+
+  const [fotoPreview, setFotoPreview] = useState<string | null>(null);
+  const [fotoFile, setFotoFile] = useState<File | null>(null); 
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [passwordData, setPasswordData] = useState({
     senhaAntiga: '',
@@ -51,6 +53,7 @@ const ModalEditarPerfil: React.FC<ModalEditarPerfilProps> = ({ usuario, onClose,
       departamento: usuario?.departamento || '',
     });
     setFotoPreview(usuario?.fotosrc || null);
+    setFotoFile(null);
   }, [usuario]);
 
   const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -66,10 +69,8 @@ const ModalEditarPerfil: React.FC<ModalEditarPerfilProps> = ({ usuario, onClose,
   const handleFotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       if (e.target.files && e.target.files[0]) {
           const file = e.target.files[0];
-          // NOTA: A lógica de upload do arquivo para um servidor (ex: S3) não está aqui.
-          // Estamos apenas mostrando uma pré-visualização.
-          // Em um app real, você faria o upload e obteria uma URL para salvar em 'fotosrc'.
-          setFotoPreview(URL.createObjectURL(file));
+          setFotoFile(file); 
+          setFotoPreview(URL.createObjectURL(file)); 
       }
   };
 
@@ -90,13 +91,18 @@ const ModalEditarPerfil: React.FC<ModalEditarPerfilProps> = ({ usuario, onClose,
 
     setIsLoading(true);
     try {
-      await updateUser(usuario.id, {
-        ...profileData,
-        // Se você tivesse a lógica de upload, passaria a nova URL da foto aqui
-        // fotosrc: novaUrlDaFoto, 
-      });
-      onSave(); // Atualiza os dados na página de perfil
-      onClose(); // Fecha o modal
+      let updatedUserData = { ...usuario };
+      if (fotoFile) {
+        const userAfterUpload = await uploadPhoto(usuario.id, fotoFile);
+        updatedUserData = { ...updatedUserData, ...userAfterUpload };
+      }
+
+      const finalUpdatedUser = await updateUser(usuario.id, profileData);
+
+      updatedUserData = { ...updatedUserData, ...finalUpdatedUser };
+      
+      onSave(updatedUserData); 
+      onClose(); 
     } catch (err: any) {
       setError(err.response?.data?.message || "Erro ao atualizar o perfil.");
       console.error(err);
@@ -106,9 +112,9 @@ const ModalEditarPerfil: React.FC<ModalEditarPerfilProps> = ({ usuario, onClose,
   };
 
   const handleSalvarSenha = async () => {
+    // ... (lógica de salvar senha permanece a mesma)
     setError(null);
     const { senhaAntiga, novaSenha, confirmarSenha } = passwordData;
-
     if (!senhaAntiga || !novaSenha || !confirmarSenha) {
       setError("Todos os campos de senha devem ser preenchidos.");
       return;
@@ -121,11 +127,9 @@ const ModalEditarPerfil: React.FC<ModalEditarPerfilProps> = ({ usuario, onClose,
       setError("A nova senha não é segura. Use 8+ caracteres, com maiúsculas, minúsculas, números e símbolos (@$!%*?&).");
       return;
     }
-
     setIsLoading(true);
     try {
         await changePassword(usuario.id, senhaAntiga, novaSenha);
-        onSave();
         onClose();
     } catch (err: any) {
         setError(err.response?.data?.message || "Erro ao alterar a senha.");
@@ -152,9 +156,10 @@ const ModalEditarPerfil: React.FC<ModalEditarPerfilProps> = ({ usuario, onClose,
               <div className="flex flex-col items-center mb-6">
                 <div className="relative mb-4">
                     <img
-                        src={fotoPreview || "/profileSemFoto/profileSemFoto.jpg"}
+                        src={profileImageLoader({ src: fotoPreview })}
                         alt="Foto de perfil"
                         className="w-28 h-28 rounded-full object-cover border-4 border-gray-100"
+                        onError={(e) => { (e.target as HTMLImageElement).src = "/profileSemFoto/profileSemFoto.jpg"; }}
                     />
                     <button 
                         onClick={() => fileInputRef.current?.click()}
@@ -167,11 +172,10 @@ const ModalEditarPerfil: React.FC<ModalEditarPerfilProps> = ({ usuario, onClose,
                         type="file" 
                         ref={fileInputRef}
                         onChange={handleFotoChange}
-                        accept="image/*"
+                        accept="image/png, image/jpeg"
                         className="hidden"
                     />
                 </div>
-                
                 <div className="w-full space-y-4">
                   <input type="text" name="nome" placeholder="Nome" value={profileData.nome} onChange={handleProfileChange} className="w-full p-3 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#050036]" />
                   <input type="email" name="email" placeholder="Email" value={profileData.email} onChange={handleProfileChange} className="w-full p-3 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#050036]" />
@@ -184,7 +188,9 @@ const ModalEditarPerfil: React.FC<ModalEditarPerfilProps> = ({ usuario, onClose,
                 <button onClick={() => { setView('password'); setError(null); }} className="w-full text-[#050036] font-semibold py-3 px-4 rounded-lg border-2 border-[#050036] hover:scale-103 duration-200 cursor-pointer">
                   Alterar senha
                 </button>
-                <button className="w-full bg-[#050036] text-white font-semibold py-3 px-4 rounded-lg border-2 hover:scale-103 duration-200 cursor-pointer" onClick={handleSalvarPerfil}>Salvar</button>
+                <button disabled={isLoading} className="w-full bg-[#050036] text-white font-semibold py-3 px-4 rounded-lg border-2 hover:scale-103 duration-200 cursor-pointer disabled:opacity-50" onClick={handleSalvarPerfil}>
+                  {isLoading ? 'Salvando...' : 'Salvar'}
+                </button>
               </div>
             </>
           ) : (
@@ -200,7 +206,9 @@ const ModalEditarPerfil: React.FC<ModalEditarPerfilProps> = ({ usuario, onClose,
                 </div>
               </div>
               {error && <p className="text-red-500 text-sm text-center mb-4">{error}</p>}
-              <button className="w-full bg-[#050036] text-white font-semibold py-3 px-4 rounded-lg border-2 hover:scale-103 duration-200 cursor-pointer" onClick={handleSalvarSenha}>Salvar Senha</button>
+              <button disabled={isLoading} className="w-full bg-[#050036] text-white font-semibold py-3 px-4 rounded-lg border-2 hover:scale-103 duration-200 cursor-pointer disabled:opacity-50" onClick={handleSalvarSenha}>
+                {isLoading ? 'Salvando...' : 'Salvar Senha'}
+              </button>
             </>
           )}
         </div>

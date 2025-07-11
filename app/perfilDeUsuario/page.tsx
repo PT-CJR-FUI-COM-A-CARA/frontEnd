@@ -3,7 +3,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import NavBar from "../components/navbar/NavBar";
 import PostCard from "../components/post_card/PostCard";
-import { getOneUser, getAvaliacoesByUser, getOneProf } from "../utils/api";
+import { getOneUser, getAvaliacoesByUser, getOneProf, profileImageLoader } from "../utils/api";
 import { FaArrowLeft } from "react-icons/fa";
 import ModalEditarPerfil from "../components/m_editar_perfil/M_Editar_Perfil";
 
@@ -54,11 +54,15 @@ const PerfilDeUsuario = () => {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+  
+  const handleSaveProfile = (updatedUser: any) => {
+    setUsuario(updatedUser);
+  };
 
   if (loading) {
     return (
       <>
-        <NavBar />
+        <NavBar usuario={usuario}/>
         <div className="text-center py-10">Carregando perfil...</div>
       </>
     );
@@ -66,7 +70,7 @@ const PerfilDeUsuario = () => {
 
   return (
     <>
-      <NavBar />
+      <NavBar usuario={usuario}/>
       <div className="flex bg-[#EDEDED] min-h-[calc(100vh-60px)] pt-10 pb-10 px-4">
         <div className="w-full max-w-2xl mx-auto relative">
           {/* Botão de voltar */}
@@ -87,9 +91,10 @@ const PerfilDeUsuario = () => {
               {/* Foto e botões */}
               <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                 <img
-                  src={usuario?.fotosrc ?? "/profileSemFoto/profileSemFoto.jpg"}
+                  src={profileImageLoader({ src: usuario?.fotosrc })}
                   alt="Foto do usuário"
                   className="w-28 h-28 md:w-32 md:h-32 rounded-full object-cover border-4 border-white shadow-lg -mt-16"
+                  onError={(e) => { (e.target as HTMLImageElement).src = "/profileSemFoto/profileSemFoto.jpg"; }}
                 />
                 <div className="flex flex-col items-center md:items-end gap-2 mt-2 md:mt-4">
                   <button 
@@ -160,12 +165,10 @@ const PerfilDeUsuario = () => {
         </div>
       </div>
       {isModalOpen && (
-        <ModalEditarPerfil 
-          usuario={usuario} 
+        <ModalEditarPerfil
+          usuario={usuario}
           onClose={() => setIsModalOpen(false)}
-          onSave={() => {
-            fetchData(); // Recarrega os dados do perfil após salvar
-          }}
+          onSave={handleSaveProfile}
         />
       )}
     </>
