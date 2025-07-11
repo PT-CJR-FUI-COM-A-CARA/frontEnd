@@ -26,24 +26,23 @@ export const Footer: React.FC = () =>{
                      <a href="https://www.instagram.com/fui_com_a_cara/" target="_blank" rel="noopener noreferrer">
                         <p className ='text-lg  hover:scale-110 transform transition-transformation duration-200'>Contato</p>
                      </a>
-                     <a href="https://www.instagram.com/fui_com_a_cara/" target="_blank" rel="noopener noreferrer">
+                     <a href="/sobre" target="_blank" rel="noopener noreferrer">
                      <p className='text-lg  hover:scale-110 transform transition-transformation duration-200'>Sobre</p>
                      </a>        
                </div>
                <p className="text-sm">
                          @2025 Fui com a cara todos os direitos reservados
                 </p>
-               
             </div>
 
     
 
             <div className="h-10 w-10" />
             <div className='flex space-x-4'>
-                <a href="https://www.instagram.com/fui_com_a_cara/" target="_blank" rel="noopener noreferrer">
+                <a href="https://www.instagram.com/cjr.unb/" target="_blank" rel="noopener noreferrer">
                     <FaInstagram size={30} className='text-white hover:scale-110 transform transition-transformation duration-200' />
                 </a>
-                <a href="https://www.linkedin.com/company/fui-com-a-cara/" target="_blank" rel="noopener noreferrer">
+                <a href="https://www.linkedin.com/company/cjr-unb/posts/?feedView=all" target="_blank" rel="noopener noreferrer">
                     <FaLinkedin size={30} className='text-white hover:scale-110 transform transition-transformation duration-200' />
                 </a>
             </div>
