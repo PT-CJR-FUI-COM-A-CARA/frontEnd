@@ -1,14 +1,18 @@
-'use client'
+'use client';
 import React, { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Botao_Branco from '../botao_branco/Botao_branco';
 import { jwtDecode } from 'jwt-decode';
-import { getOneUser, countNaoLidas } from '@/app/utils/api';
+import { getOneUser, countNaoLidas, profileImageLoader } from '@/app/utils/api';
 import MenuModal from '../menu_modal/MenuModal';
 import PopUp from '../popup/PopUp';
 import { Notificacao_G } from '../Notificacão/Caixa_grande';
 
-export default function NavBar() {
+interface NavBarProps {
+  usuario?: any; 
+}
+
+export default function NavBar({ usuario: usuarioProp }: NavBarProps) {
   const router = useRouter();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userPhoto, setUserPhoto] = useState<string | null>(null);
@@ -21,36 +25,42 @@ export default function NavBar() {
   const notificacaoRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-
-    if (token) {
+    if (usuarioProp) {
       setIsLoggedIn(true);
-      try {
-        const decoded: { sub?: string } = jwtDecode(token);
-        if (decoded.sub) {
-          const id = Number(decoded.sub);
-          setUserID(id);
+      setUserID(usuarioProp.id);
+      setUserPhoto(usuarioProp.fotosrc ?? null);
+      
+      countNaoLidas(usuarioProp.id)
+        .then(count => setNotificacoesNaoLidas(count))
+        .catch(err => console.error('Erro ao contar notificações:', err));
 
-          getOneUser(id)
-            .then(user => {
-              setUserPhoto(user.fotosrc ?? null);
-            })
-            .catch(err => console.error('Erro ao buscar foto do usuário:', err));
+    } else {
+      const token = localStorage.getItem('token');
+      if (token) {
+        setIsLoggedIn(true);
+        try {
+          const decoded: { sub?: string } = jwtDecode(token);
+          if (decoded.sub) {
+            const id = Number(decoded.sub);
+            setUserID(id);
 
-          // Buscar quantidade de notificações não lidas
-          countNaoLidas(id)
-            .then(count => {
-              setNotificacoesNaoLidas(count);
-            })
-            .catch(err => console.error('Erro ao contar notificações não lidas:', err));
+            getOneUser(id)
+              .then(user => setUserPhoto(user.fotosrc ?? null))
+              .catch(err => console.error('Erro ao buscar foto:', err));
+
+            countNaoLidas(id)
+              .then(count => setNotificacoesNaoLidas(count))
+              .catch(err => console.error('Erro ao contar notificações:', err));
+          }
+        } catch (error) {
+          console.error('Erro ao decodificar token:', error);
         }
-      } catch (error) {
-        console.error('Erro ao decodificar token:', error);
+      } else {
+        setIsLoggedIn(false);
       }
     }
-  }, []);
+  }, [usuarioProp]); 
 
-  // Fechar modal de notificação ao clicar fora
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -78,117 +88,110 @@ export default function NavBar() {
     router.push('/login');
   };
 
-  const handleOpenMenuModal = () => {
-    setIsMenuModalOpen(true);
-  };
-
-  const handleCloseMenuModal = () => {
-    setIsMenuModalOpen(false);
-  };
-
+  const handleOpenMenuModal = () => setIsMenuModalOpen(true);
+  const handleCloseMenuModal = () => setIsMenuModalOpen(false);
   const handleEnviarAvaliacao = () => {
     setIsPopUpOpen(true);
-    setTimeout(() => {
-      setIsPopUpOpen(false);
-    }, 3000);
+    setTimeout(() => setIsPopUpOpen(false), 3000);
   };
-
-  // Função que será passada para o Notificacao_G para atualizar o contador
-  const atualizarContadorParaZero = () => {
-    setNotificacoesNaoLidas(0);
-  };
+  const atualizarContadorParaZero = () => setNotificacoesNaoLidas(0);
 
   return (
-    <header>
-      <nav className="h-15 bg-[#050036] text-white p-1">
-        <div className="container mx-auto flex justify-between items-center">
-          <div className="flex items-center space-x-4 ml-15">
-            <button
-              aria-label="Home"
-              className="p-1 rounded-full hover:scale-105 transition duration-300 cursor-pointer"
-              onClick={() => router.push('/')}
-            >
-              <img src="/logo/Logomarca 3.svg" alt="Logo" className="h-12" />
-            </button>
-          </div>
-
-          {isLoggedIn ? (
-            <ul className="flex space-x-4 mr-15">
-              <li>
-                <button
-                  aria-label="mais"
-                  onClick={handleOpenMenuModal}
-                  className="p-1 rounded-full hover:scale-110 transition duration-300 cursor-pointer"
-                >
-                  <img src="/icones-nav/Mais_Icon.png" alt="Mais" className="h-7" />
-                </button>
-              </li>
-
-              <li className="relative">
-                <button
-                  aria-label="notificações"
-                  onClick={() => setNotificacaoModalOpen(!notificacaoModalOpen)}
-                  className="p-1 rounded-full hover:scale-110 transition duration-300 cursor-pointer"
-                >
-                  <img src="/icones-nav/Noti_Icon.png" alt="notificações" className="h-7" />
-                  {notificacoesNaoLidas > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1">
-                      {notificacoesNaoLidas}
-                    </span>
-                  )}
-                </button>
-
-                {notificacaoModalOpen && userID && (
-                  <div
-                    ref={notificacaoRef}
-                    className="absolute right-0 mt-2 z-50 shadow-lg"
-                  >
-                    <Notificacao_G
-                      userId={userID}
-                      onMarcarTodasComoLidas={atualizarContadorParaZero}
-                    />
-                  </div>
-                )}
-              </li>
-
-              <li>
-                <button
-                  onClick={() => router.push(`/perfilDeUsuario?id=${userID}`)}
-                  className="p-1 rounded-full hover:scale-110 transition duration-300 cursor-pointer"
-                  aria-label="Perfil do usuário"
-                >
-                  <img
-                    src={userPhoto || '/profileSemFoto/profileSemFoto.jpg'}
-                    alt="Foto do perfil"
-                    className="h-9 w-9 rounded-full object-cover border border-white shadow-sm"
-                  />
-                </button>
-              </li>
-
-              <li>
-                <button
-                  onClick={handleLogout}
-                  aria-label="Sair"
-                  className="p-1 rounded-full hover:scale-110 transition duration-300 cursor-pointer"
-                >
-                  <img src="/icones-nav/Saida_Icon.png" alt="Sair" className="h-7" />
-                </button>
-              </li>
-            </ul>
-          ) : (
-            <ul className="flex flex-col sm:flex-row gap-2 sm:gap-4 mr-15">
-              <li className="flex space-x-3">
-                <Botao_Branco onClick={() => router.push('/login')} type="button">
-                  Login
-                </Botao_Branco>
-                <Botao_Branco onClick={() => router.push('/cadastro')} type="button">
-                  Cadastro
-                </Botao_Branco>
-              </li>
-            </ul>
-          )}
+  <header>
+    <nav className="bg-[#050036] text-white h-16 px-6 sm:px-12 lg:px-24">
+      <div className="max-w-7xl mx-auto h-full flex items-center justify-between">
+        {/* Logo */}
+        <div className="flex items-center">
+          <button
+            aria-label="Home"
+            className="p-2 rounded-full hover:scale-105 transition"
+            onClick={() => router.push('/')}
+          >
+            <img src="/logo/Logomarca 3.svg" alt="Logo" className="h-10 w-auto" />
+          </button>
         </div>
-      </nav>
+
+        {isLoggedIn ? (
+          <ul className="flex items-center gap-1"> {/* Diminui o espaço aqui */}
+            {/* Mais */}
+            <li>
+              <button
+                aria-label="Mais"
+                onClick={handleOpenMenuModal}
+                className="p-2 rounded-full hover:bg-white/10 transition"
+              >
+                <img src="/icones-nav/Mais_Icon.png" alt="Mais" className="h-6 w-6" />
+              </button>
+            </li>
+
+            {/* Notificações */}
+            <li className="relative">
+              <button
+                aria-label="Notificações"
+                onClick={() => setNotificacaoModalOpen(!notificacaoModalOpen)}
+                className="p-2 rounded-full hover:bg-white/10 transition relative"
+              >
+                <img src="/icones-nav/Noti_Icon.png" alt="Notificações" className="h-6 w-6" />
+                {notificacoesNaoLidas > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full px-1">
+                    {notificacoesNaoLidas}
+                  </span>
+                )}
+              </button>
+
+              {notificacaoModalOpen && userID && (
+                <div ref={notificacaoRef} className="absolute right-0 mt-2 z-50 shadow-lg">
+                  <Notificacao_G
+                    userId={userID}
+                    onMarcarTodasComoLidas={atualizarContadorParaZero}
+                  />
+                </div>
+              )}
+            </li>
+
+            {/* Perfil */}
+            <li>
+              <button
+                onClick={() => router.push(`/perfilDeUsuario?id=${userID}`)}
+                className="p-1 rounded-full hover:scale-105 transition"
+                aria-label="Perfil"
+              >
+                <img
+                  src={profileImageLoader({ src: userPhoto })}
+                  alt="Perfil"
+                  className="h-8 w-8 rounded-full object-cover border border-white"
+                  onError={(e) => { (e.target as HTMLImageElement).src = "/profileSemFoto/profileSemFoto.jpg"; }}
+                />
+              </button>
+            </li>
+
+            {/* Sair */}
+            <li>
+              <button
+                onClick={handleLogout}
+                aria-label="Sair"
+                className="p-2 rounded-full hover:bg-white/10 transition"
+              >
+                <img src="/icones-nav/Saida_Icon.png" alt="Sair" className="h-6 w-6" />
+              </button>
+            </li>
+          </ul>
+        ) : (
+          <ul className="flex gap-3">
+            <li>
+              <Botao_Branco onClick={() => router.push('/login')} type="button">
+                Login
+              </Botao_Branco>
+            </li>
+            <li>
+              <Botao_Branco onClick={() => router.push('/cadastro')} type="button">
+                Cadastro
+              </Botao_Branco>
+            </li>
+          </ul>
+        )}
+      </div>
+    </nav>
 
       <MenuModal
         isOpen={isMenuModalOpen}

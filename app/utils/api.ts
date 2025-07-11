@@ -125,3 +125,50 @@ export const countNaoLidas = async (userId: number) => {
   const response = await api.get(`/notificacoes/count/nao-lidas/${userId}`);
   return response.data;
 };
+
+export const updateUser = async (id: number, userData: {
+  nome?: string;
+  email?: string;
+  curso?: string;
+  departamento?: string;
+  fotosrc?: string; 
+}) => {
+  const response = await api.patch(`/users/${id}`, userData);
+  return response.data;
+};
+
+export const changePassword = async (id: number, senhaAntiga: string, novaSenha: string) => {
+  const response = await api.patch(`/users/change-password/${id}`, { senhaAntiga, novaSenha });
+  return response.data;
+};
+
+export const uploadPhoto = async (userId: number, file: File) => {
+  const formData = new FormData();
+  formData.append('file', file); 
+
+  const response = await api.post(`/users/${userId}/upload-photo`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return response.data; 
+};
+
+export const profileImageLoader = ({ src }: { src?: string | null }): string => {
+  const defaultImage = "/profileSemFoto/profileSemFoto.jpg";
+  const backendUrl = "http://localhost:3001";
+
+  if (!src) {
+    return defaultImage;
+  }
+
+  if (src.startsWith("http") || src.startsWith("blob:")) {
+    return src;
+  }
+
+  if (src.startsWith("/")) {
+    return `${backendUrl}${src}`;
+  }
+
+  return defaultImage;
+};

@@ -63,7 +63,7 @@ const Home = () => {
     <>
       <NavBar />
 
-      <div className="flex justify-end px-10 mt-4">
+      <div className="flex justify-end px-10 pr-23 mt-4">
         <BarraPes
           onSearch={handleSearch}
           sugestoes={professores.map((p) => ({
