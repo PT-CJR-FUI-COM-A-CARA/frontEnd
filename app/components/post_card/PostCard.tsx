@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { FaRegComment, FaTrash, FaEdit } from "react-icons/fa";
-import { deleteAvaliacao, getComentariosCount } from "@/app/utils/api";
+import { deleteAvaliacao, getComentariosCount, profileImageLoader } from "@/app/utils/api";
 import { jwtDecode } from "jwt-decode";
 import Mcomentario from "../m_comentario/M_Comentario";
 import MeditAvaliacao from "../m_editar_avaliacao/M_Editar_Avaliacao";
@@ -79,9 +79,10 @@ const PostCard: React.FC<PostCardProps> = ({
       <div className="flex items-center gap-3">
         <Link href={{ pathname: "/perfilDeUsuario", query: { id: userId } }}>
           <img
-            src={userImage}
+            src={profileImageLoader({ src: userImage })}
             alt={userName}
             className="w-12 h-12 rounded-full object-cover cursor-pointer"
+            onError={(e) => { (e.target as HTMLImageElement).src = "/profileSemFoto/profileSemFoto.jpg"; }}
           />
         </Link>
         <div>

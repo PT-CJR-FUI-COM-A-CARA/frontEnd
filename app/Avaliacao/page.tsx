@@ -14,6 +14,7 @@ import {
   getOneProf,
   deleteComentario,
   deleteAvaliacao,
+  profileImageLoader,
 } from "@/app/utils/api";
 
 // --- Componente para o Card de Comentário ---
@@ -44,7 +45,14 @@ const CommentCard = ({ comment, onAction }: { comment: any, onAction: () => void
     <div>
       <div className="flex items-center gap-2">
         <Link href={`/perfilDeUsuario?id=${comment.usersId}`}>
-            <img src={comment.userImage || "/profileSemFoto/profileSemFoto.jpg"} alt={comment.userName} className="w-8 h-8 rounded-full object-cover"/>
+            <img 
+              src={profileImageLoader({ src: comment.userImage })} 
+              alt={comment.userName} 
+              className="w-8 h-8 rounded-full object-cover"
+              onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => { 
+                (e.target as HTMLImageElement).src = "/profileSemFoto/profileSemFoto.jpg"; 
+              }}
+            />
         </Link>
         <p className="font-bold text-sm text-[#050036]">{comment.userName}</p>
         <span className="text-xs text-gray-500">· {new Date(comment.data).toLocaleString("pt-BR")}</span>
@@ -147,7 +155,14 @@ const PaginaAvaliacao = () => {
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <Link href={`/perfilDeUsuario?id=${avaliacao.userId}`}>
-                            <img src={avaliacao.userImage || '/profileSemFoto/profileSemFoto.jpg'} alt={avaliacao.userName} className="w-12 h-12 rounded-full object-cover"/>
+                            <img 
+                              src={profileImageLoader({ src: avaliacao.userImage })} 
+                              alt={avaliacao.userName} 
+                              className="w-12 h-12 rounded-full object-cover"
+                              onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => { 
+                                (e.target as HTMLImageElement).src = "/profileSemFoto/profileSemFoto.jpg"; 
+                              }}
+                            />
                         </Link>
                         <div>
                             <p className="font-bold text-[#050036] text-base">{avaliacao.userName}</p>

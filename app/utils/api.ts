@@ -142,6 +142,11 @@ export const changePassword = async (id: number, senhaAntiga: string, novaSenha:
   return response.data;
 };
 
+export const deleteUserAccount = async (id: number, senha: string) => {
+  const response = await api.post(`/users/delete-account/${id}`, { senha });
+  return response.data;
+};
+
 export const uploadPhoto = async (userId: number, file: File) => {
   const formData = new FormData();
   formData.append('file', file); 

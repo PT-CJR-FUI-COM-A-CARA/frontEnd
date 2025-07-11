@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FaArrowLeft, FaTimes, FaCamera } from 'react-icons/fa';
-import { updateUser, changePassword, uploadPhoto, profileImageLoader } from '../../utils/api'; 
+import { FaArrowLeft, FaTimes, FaCamera, FaTrashAlt } from 'react-icons/fa';
+import { updateUser, changePassword, uploadPhoto, profileImageLoader, deleteUserAccount } from '../../utils/api'; 
 import { GiKey } from "react-icons/gi";
+import { useRouter } from 'next/navigation';
 
 const validarSenhaSegura = (senha: string) => {
   const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
@@ -24,7 +25,8 @@ interface ModalEditarPerfilProps {
 }
 
 const ModalEditarPerfil: React.FC<ModalEditarPerfilProps> = ({ usuario, onClose, onSave }) => {
-  const [view, setView] = useState<'profile' | 'password'>('profile');
+  const [view, setView] = useState<'profile' | 'password' | 'delete'>('profile');
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -44,6 +46,8 @@ const ModalEditarPerfil: React.FC<ModalEditarPerfilProps> = ({ usuario, onClose,
     novaSenha: '',
     confirmarSenha: '',
   });
+
+  const [deletePassword, setDeletePassword] = useState('');
 
   useEffect(() => {
     setProfileData({
@@ -139,13 +143,35 @@ const ModalEditarPerfil: React.FC<ModalEditarPerfilProps> = ({ usuario, onClose,
     }
   };
 
+  const handleExcluirConta = async () => {
+    setError(null);
+    if (!deletePassword) {
+      setError("Por favor, insira sua senha para confirmar a exclusão.");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await deleteUserAccount(usuario.id, deletePassword);
+      alert('Conta excluída com sucesso.'); // Idealmente, use um componente de notificação
+      localStorage.removeItem('token'); // Limpa o token de autenticação
+      onClose();
+      router.push('/login'); // Redireciona para a página de login
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Erro ao excluir a conta.");
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md relative animate-fade-in-up">
         <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
           <FaTimes size={20} />
         </button>
-        {view === 'password' && (
+        {(view === 'password' || view === 'delete') && (
           <button onClick={() => { setView('profile'); setError(null); }} className="absolute top-4 left-4 text-gray-400 hover:text-gray-600">
             <FaArrowLeft size={20} />
           </button>
@@ -185,6 +211,9 @@ const ModalEditarPerfil: React.FC<ModalEditarPerfilProps> = ({ usuario, onClose,
               </div>
               {error && <p className="text-red-500 text-sm text-center mb-4">{error}</p>}
               <div className="space-y-3">
+                <button onClick={() => { setView('delete'); setError(null); }} className="w-full text-red-600 font-semibold py-3 px-4 rounded-lg border-2 border-red-500 hover:bg-red-50 hover:scale-103 duration-200 cursor-pointer">
+                  Excluir Conta
+                </button>
                 <button onClick={() => { setView('password'); setError(null); }} className="w-full text-[#050036] font-semibold py-3 px-4 rounded-lg border-2 border-[#050036] hover:scale-103 duration-200 cursor-pointer">
                   Alterar senha
                 </button>
@@ -193,7 +222,7 @@ const ModalEditarPerfil: React.FC<ModalEditarPerfilProps> = ({ usuario, onClose,
                 </button>
               </div>
             </>
-          ) : (
+          ) : view === 'password' ? (
             <>
               <div className="flex flex-col items-center mb-6">
                 <div className="mb-4 p-4 rounded-full">
@@ -209,6 +238,44 @@ const ModalEditarPerfil: React.FC<ModalEditarPerfilProps> = ({ usuario, onClose,
               <button disabled={isLoading} className="w-full bg-[#050036] text-white font-semibold py-3 px-4 rounded-lg border-2 hover:scale-103 duration-200 cursor-pointer disabled:opacity-50" onClick={handleSalvarSenha}>
                 {isLoading ? 'Salvando...' : 'Salvar Senha'}
               </button>
+            </>
+          ) : ( 
+            <>
+              <div className="flex flex-col items-center mb-6 text-center">
+                <div className="mb-4 p-4 rounded-full bg-red-100">
+                    <FaTrashAlt size={50} className="text-red-500" />
+                </div>
+                <h2 className="text-xl font-bold text-gray-800 mb-2">Excluir sua conta?</h2>
+                <p className="text-gray-600 mb-4">
+                  Esta ação é permanente e não pode ser desfeita. Para confirmar, por favor, digite sua senha.
+                </p>
+                <div className="w-full space-y-4">
+                  <input 
+                    type="password" 
+                    name="deletePassword" 
+                    placeholder="Sua Senha Atual" 
+                    value={deletePassword} 
+                    onChange={(e) => setDeletePassword(e.target.value)} 
+                    className="w-full p-3 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" 
+                  />
+                </div>
+              </div>
+              {error && <p className="text-red-500 text-sm text-center mb-4">{error}</p>}
+              <div className="flex gap-3">
+                <button 
+                  onClick={() => { setView('profile'); setError(null); }} 
+                  className="w-full text-gray-700 font-semibold py-3 px-4 rounded-lg border-2 border-gray-300 hover:bg-gray-100 duration-200 cursor-pointer"
+                >
+                  Cancelar
+                </button>
+                <button 
+                  disabled={isLoading} 
+                  className="w-full bg-red-600 text-white font-semibold py-3 px-4 rounded-lg border-2 border-red-600 hover:bg-red-700 hover:scale-103 duration-200 cursor-pointer disabled:opacity-50" 
+                  onClick={handleExcluirConta}
+                >
+                  {isLoading ? 'Excluindo...' : 'Confirmar Exclusão'}
+                </button>
+              </div>
             </>
           )}
         </div>
