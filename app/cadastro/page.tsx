@@ -71,7 +71,7 @@ export default function CadastroPage() {
     //if (!validarSenhaSegura(senha)) {
       //setErro('A senha deve ter pelo menos 8 caracteres, incluindo uma letra maiúscula, uma letra minúscula, um número e um caractere especial.');
       //return;
-    //}
+   // }
 
     if (senha !== confirmarSenha) {
       setErro('As senhas não coincidem.');

@@ -6,6 +6,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { getOneProf, getAvaliacoesByProf, getOneUser } from "../utils/api";
 import PostCard from "../components/post_card/PostCard";
 import { Footer } from "../components/footer/Footer";
+import { Criaprof } from '../components/M_CriarProfessor/Criaprof';
+import  Botao_Azul  from '../components/botao_azul/Botao_Azul';
 
 const PerfilDeProfessor = () => {
   const router = useRouter();
@@ -14,6 +16,11 @@ const PerfilDeProfessor = () => {
 
   const [professor, setProfessor] = useState<any>(null);
   const [avaliacoes, setAvaliacoes] = useState<any[]>([]);
+
+   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const abrirModal = () => setIsModalOpen(true);
+  const fecharModal = () => setIsModalOpen(false);
 
   useEffect(() => {
     const fetchProfessor = async () => {
@@ -141,6 +148,13 @@ const PerfilDeProfessor = () => {
               </div>
             </div>
           </div>
+        </div>
+        <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
+          <Botao_Azul onClick={abrirModal}>
+           Abrir Modal
+          </Botao_Azul>
+
+           <Criaprof isOpen={isModalOpen} onClose={fecharModal} />
         </div>
       </div>
       <Footer />
