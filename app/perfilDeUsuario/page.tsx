@@ -6,11 +6,16 @@ import PostCard from "../components/post_card/PostCard";
 import { getOneUser, getAvaliacoesByUser, getOneProf, profileImageLoader } from "../utils/api";
 import { FaArrowLeft, FaEnvelope, FaBuilding } from "react-icons/fa";
 import ModalEditarPerfil from "../components/m_editar_perfil/M_Editar_Perfil";
+import { jwtDecode } from "jwt-decode";
+import { useAuth } from "../contexts/AuthContext";
 
 const PerfilDeUsuario = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const userId = searchParams.get("id");
+
+  const profileUserId = searchParams.get("id"); 
+  const { loggedInUser, setLoggedInUser } = useAuth();
 
   const [usuario, setUsuario] = useState<any>(null);
   const [avaliacoes, setAvaliacoes] = useState<any[]>([]);
@@ -57,12 +62,15 @@ const PerfilDeUsuario = () => {
   
   const handleSaveProfile = (updatedUser: any) => {
     setUsuario(updatedUser);
+    setLoggedInUser(updatedUser);
   };
+
+  const isOwnerOfProfile = loggedInUser && loggedInUser.id === Number(profileUserId);
 
   if (loading) {
     return (
       <>
-        <NavBar usuario={usuario}/>
+        <NavBar/>
         <div className="text-center py-10">Carregando perfil...</div>
       </>
     );
@@ -70,7 +78,7 @@ const PerfilDeUsuario = () => {
 
   return (
     <>
-      <NavBar usuario={usuario}/>
+      <NavBar/>
       <div className="flex bg-[#EDEDED] min-h-[calc(100vh-60px)] pt-10 pb-10 px-4">
         <div className="w-full max-w-2xl mx-auto relative">
           <button
@@ -93,12 +101,14 @@ const PerfilDeUsuario = () => {
                   onError={(e) => { (e.target as HTMLImageElement).src = "/profileSemFoto/profileSemFoto.jpg"; }}
                 />
                 <div className="flex flex-col items-center md:items-end gap-2 mt-2 md:mt-4">
-                  <button 
-                    onClick={() => setIsModalOpen(true)}
-                    className="bg-[#050036] text-white text-sm px-5 py-2 rounded-full hover:scale-105 transition"
-                  >
-                    Editar Perfil
-                  </button>
+                  {isOwnerOfProfile && (
+                    <button 
+                      onClick={() => setIsModalOpen(true)}
+                      className="bg-[#050036] text-white text-sm px-5 py-2 rounded-full hover:scale-105 transition"
+                    >
+                      Editar Perfil
+                    </button>
+                  )}
                 </div>
               </div>
               <div className="pt-4 text-center md:text-left">
@@ -157,7 +167,7 @@ const PerfilDeUsuario = () => {
           </div>
         </div>
       </div>
-      {isModalOpen && (
+      {isModalOpen && isOwnerOfProfile && (
         <ModalEditarPerfil
           usuario={usuario}
           onClose={() => setIsModalOpen(false)}
