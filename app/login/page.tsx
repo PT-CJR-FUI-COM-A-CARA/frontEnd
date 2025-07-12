@@ -4,7 +4,9 @@ import { useRouter } from 'next/navigation';
 import React,{useState,} from 'react';
 import Botão from '../components/botao_azul/Botao_Azul';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import { loginUser } from '../utils/api';
+import { loginUser, getOneUser } from '../utils/api';
+import { useAuth } from '../contexts/AuthContext';
+import { jwtDecode } from 'jwt-decode';
 
 
 export default function LoginPage() {
@@ -15,6 +17,7 @@ export default function LoginPage() {
 
   const router = useRouter();
 
+  const { setLoggedInUser } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,14 +26,21 @@ export default function LoginPage() {
       return;
     }
     try {
+      
       const response = await loginUser(email, senha);
-      localStorage.setItem("token", response.access_token);
-      const token = localStorage.getItem("token");
-      console.log(token);
+      const token = response.access_token;
+      
+      localStorage.setItem("token", token);
+      
+      const decoded: { sub?: string } = jwtDecode(token);
+      if (decoded.sub) {
+        const userData = await getOneUser(Number(decoded.sub));
+        
+        setLoggedInUser(userData);
+      }
+      
+      router.push('/');
 
-      setTimeout(() => {
-        router.push('/');
-      },)
     } catch (error) {
       console.error('Erro ao fazer login do usuário:', error);
       setErro('Erro ao fazer login. Verifique suas credenciais.');

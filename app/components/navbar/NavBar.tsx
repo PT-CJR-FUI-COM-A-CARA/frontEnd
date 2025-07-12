@@ -3,20 +3,16 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Botao_Branco from '../botao_branco/Botao_branco';
 import { jwtDecode } from 'jwt-decode';
-import { getOneUser, countNaoLidas, profileImageLoader } from '@/app/utils/api';
+import { countNaoLidas, profileImageLoader } from '@/app/utils/api';
 import MenuModal from '../menu_modal/MenuModal';
 import PopUp from '../popup/PopUp';
 import { Notificacao_G } from '../Notificacão/Caixa_grande';
+import { useAuth } from '@/app/contexts/AuthContext';
 
-interface NavBarProps {
-  usuario?: any; 
-}
-
-export default function NavBar({ usuario: usuarioProp }: NavBarProps) {
+export default function NavBar() {
   const router = useRouter();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userPhoto, setUserPhoto] = useState<string | null>(null);
-  const [userID, setUserID] = useState<number | null>(null);
+  const { loggedInUser, setLoggedInUser, isLoading } = useAuth();
+  
   const [isMenuModalOpen, setIsMenuModalOpen] = useState(false);
   const [isPopUpOpen, setIsPopUpOpen] = useState(false);
   const [notificacaoModalOpen, setNotificacaoModalOpen] = useState(false);
@@ -25,41 +21,15 @@ export default function NavBar({ usuario: usuarioProp }: NavBarProps) {
   const notificacaoRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (usuarioProp) {
-      setIsLoggedIn(true);
-      setUserID(usuarioProp.id);
-      setUserPhoto(usuarioProp.fotosrc ?? null);
-      
-      countNaoLidas(usuarioProp.id)
+    if (loggedInUser) {
+      countNaoLidas(loggedInUser.id)
         .then(count => setNotificacoesNaoLidas(count))
-        .catch(err => console.error('Erro ao contar notificações:', err));
-
-    } else {
-      const token = localStorage.getItem('token');
-      if (token) {
-        setIsLoggedIn(true);
-        try {
-          const decoded: { sub?: string } = jwtDecode(token);
-          if (decoded.sub) {
-            const id = Number(decoded.sub);
-            setUserID(id);
-
-            getOneUser(id)
-              .then(user => setUserPhoto(user.fotosrc ?? null))
-              .catch(err => console.error('Erro ao buscar foto:', err));
-
-            countNaoLidas(id)
-              .then(count => setNotificacoesNaoLidas(count))
-              .catch(err => console.error('Erro ao contar notificações:', err));
-          }
-        } catch (error) {
-          console.error('Erro ao decodificar token:', error);
-        }
-      } else {
-        setIsLoggedIn(false);
-      }
+        .catch(err => {
+          console.error('Erro ao contar notificações não lidas:', err);
+          setNotificacoesNaoLidas(0);
+        });
     }
-  }, [usuarioProp]); 
+  }, [loggedInUser]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -84,7 +54,7 @@ export default function NavBar({ usuario: usuarioProp }: NavBarProps) {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    setIsLoggedIn(false);
+    setLoggedInUser(null);
     router.push('/login');
   };
 
@@ -95,6 +65,10 @@ export default function NavBar({ usuario: usuarioProp }: NavBarProps) {
     setTimeout(() => setIsPopUpOpen(false), 3000);
   };
   const atualizarContadorParaZero = () => setNotificacoesNaoLidas(0);
+
+  if (isLoading) {
+    return <div className="bg-[#050036] h-16" />; 
+  }
 
   return (
   <header>
@@ -111,7 +85,7 @@ export default function NavBar({ usuario: usuarioProp }: NavBarProps) {
           </button>
         </div>
 
-        {isLoggedIn ? (
+        {loggedInUser ? (
           <ul className="flex items-center gap-1"> {/* Diminui o espaço aqui */}
             {/* Mais */}
             <li>
@@ -139,10 +113,10 @@ export default function NavBar({ usuario: usuarioProp }: NavBarProps) {
                 )}
               </button>
 
-              {notificacaoModalOpen && userID && (
+              {notificacaoModalOpen && (
                 <div ref={notificacaoRef} className="absolute right-0 mt-2 z-50 shadow-lg">
                   <Notificacao_G
-                    userId={userID}
+                    userId={loggedInUser.id}
                     onMarcarTodasComoLidas={atualizarContadorParaZero}
                   />
                 </div>
@@ -152,17 +126,17 @@ export default function NavBar({ usuario: usuarioProp }: NavBarProps) {
             {/* Perfil */}
             <li>
               <button
-                onClick={() => router.push(`/perfilDeUsuario?id=${userID}`)}
-                className="p-1 rounded-full hover:scale-105 transition"
-                aria-label="Perfil"
-              >
-                <img
-                  src={profileImageLoader({ src: userPhoto })}
-                  alt="Perfil"
-                  className="h-8 w-8 rounded-full object-cover border border-white"
-                  onError={(e) => { (e.target as HTMLImageElement).src = "/profileSemFoto/profileSemFoto.jpg"; }}
-                />
-              </button>
+                  onClick={() => router.push(`/perfilDeUsuario?id=${loggedInUser.id}`)}
+                  className="p-1 rounded-full hover:scale-105 transition"
+                  aria-label="Perfil"
+                >
+                  <img
+                    src={profileImageLoader({ src: loggedInUser.fotosrc })}
+                    alt="Perfil"
+                    className="h-8 w-8 rounded-full object-cover border border-white"
+                    onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => { (e.target as HTMLImageElement).src = "/profileSemFoto/profileSemFoto.jpg"; }}
+                  />
+                </button>
             </li>
 
             {/* Sair */}
