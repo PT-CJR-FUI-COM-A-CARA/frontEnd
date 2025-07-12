@@ -3,7 +3,9 @@ import { FaArrowLeft, FaTimes, FaCamera, FaTrashAlt } from 'react-icons/fa';
 import { updateUser, changePassword, uploadPhoto, profileImageLoader, deleteUserAccount } from '../../utils/api'; 
 import { GiKey } from "react-icons/gi";
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/app/contexts/AuthContext';
 
+// Funções de validação (mantidas fora do componente para clareza)
 const validarSenhaSegura = (senha: string) => {
   const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
   return regex.test(senha);
@@ -17,13 +19,14 @@ const validarEmail = (email: string) => {
   return regexFormato.test(email.trim());
 };
 
-
+// Interface das props do componente
 interface ModalEditarPerfilProps {
   usuario: any;
   onClose: () => void;
   onSave: (updatedUser: any) => void; 
 }
 
+// Componente principal
 const ModalEditarPerfil: React.FC<ModalEditarPerfilProps> = ({ usuario, onClose, onSave }) => {
   const [view, setView] = useState<'profile' | 'password' | 'delete'>('profile');
   const router = useRouter();
@@ -36,6 +39,8 @@ const ModalEditarPerfil: React.FC<ModalEditarPerfilProps> = ({ usuario, onClose,
     curso: '',
     departamento: '',
   });
+
+  const { setLoggedInUser } = useAuth();
 
   const [fotoPreview, setFotoPreview] = useState<string | null>(null);
   const [fotoFile, setFotoFile] = useState<File | null>(null); 
@@ -102,7 +107,6 @@ const ModalEditarPerfil: React.FC<ModalEditarPerfilProps> = ({ usuario, onClose,
       }
 
       const finalUpdatedUser = await updateUser(usuario.id, profileData);
-
       updatedUserData = { ...updatedUserData, ...finalUpdatedUser };
       
       onSave(updatedUserData); 
@@ -116,7 +120,6 @@ const ModalEditarPerfil: React.FC<ModalEditarPerfilProps> = ({ usuario, onClose,
   };
 
   const handleSalvarSenha = async () => {
-    // ... (lógica de salvar senha permanece a mesma)
     setError(null);
     const { senhaAntiga, novaSenha, confirmarSenha } = passwordData;
     if (!senhaAntiga || !novaSenha || !confirmarSenha) {
@@ -153,10 +156,13 @@ const ModalEditarPerfil: React.FC<ModalEditarPerfilProps> = ({ usuario, onClose,
     setIsLoading(true);
     try {
       await deleteUserAccount(usuario.id, deletePassword);
-      alert('Conta excluída com sucesso.'); // Idealmente, use um componente de notificação
-      localStorage.removeItem('token'); // Limpa o token de autenticação
+      
+      localStorage.removeItem('token'); 
+      setLoggedInUser(null);
+      
+      alert('Conta excluída com sucesso.'); 
       onClose();
-      router.push('/login'); // Redireciona para a página de login
+      router.push('/login');
     } catch (err: any) {
       setError(err.response?.data?.message || "Erro ao excluir a conta.");
       console.error(err);
@@ -185,7 +191,7 @@ const ModalEditarPerfil: React.FC<ModalEditarPerfilProps> = ({ usuario, onClose,
                         src={profileImageLoader({ src: fotoPreview })}
                         alt="Foto de perfil"
                         className="w-28 h-28 rounded-full object-cover border-4 border-gray-100"
-                        onError={(e) => { (e.target as HTMLImageElement).src = "/profileSemFoto/profileSemFoto.jpg"; }}
+                        onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => { (e.target as HTMLImageElement).src = "/profileSemFoto/profileSemFoto.jpg"; }}
                     />
                     <button 
                         onClick={() => fileInputRef.current?.click()}
@@ -239,7 +245,7 @@ const ModalEditarPerfil: React.FC<ModalEditarPerfilProps> = ({ usuario, onClose,
                 {isLoading ? 'Salvando...' : 'Salvar Senha'}
               </button>
             </>
-          ) : ( 
+          ) : ( // view === 'delete'
             <>
               <div className="flex flex-col items-center mb-6 text-center">
                 <div className="mb-4 p-4 rounded-full bg-red-100">
