@@ -69,7 +69,7 @@ const Home = () => {
 
   return (
     <>
-      <NavBar />
+      
 
       <div className="flex justify-end px-10 pr-23 mt-4">
         <BarraPes
