@@ -67,8 +67,8 @@ const ContactInfo = () => {
       icon: FaLinkedin,
       title: 'LINKEDIN',
       description: 'Nosso linkedin para mais atualizações sobre o projeto',
-      info: '@',
-      link: 'https://www.linkedin.com/in/fui-com-a-cara-undefined-b0988b374/',
+      info: 'clique aqui para acessar',
+      link: 'https://www.linkedin.com/in/fui-com-a-cara-b0988b374/',
     },
     {
       icon: FaEnvelope,
