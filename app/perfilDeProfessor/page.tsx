@@ -3,7 +3,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import NavBar from "../components/navbar/NavBar";
 import { FaBuilding, FaBook, FaArrowLeft } from "react-icons/fa";
 import { useRouter, useSearchParams } from "next/navigation";
-import { getOneProf, getAvaliacoesByProf, getOneUser } from "../utils/api";
+import { getOneProf, getAvaliacoesByProf, getOneUser, profileImageLoader } from "../utils/api";
 import PostCard from "../components/post_card/PostCard";
 
 const PerfilDeProfessor = () => {
@@ -91,7 +91,7 @@ const PerfilDeProfessor = () => {
               <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                 <div className="flex justify-center md:justify-start -mt-16">
                   <img
-                    src={professor?.fotosrc ?? "/profileSemFoto/profileSemFoto.jpg"}
+                    src={profileImageLoader({ src: professor?.fotosrc })}
                     alt="Foto do professor"
                     className="w-28 h-28 md:w-36 md:h-36 rounded-full object-cover border-4 border-white shadow-lg"
                   />
