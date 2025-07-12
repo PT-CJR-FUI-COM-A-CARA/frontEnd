@@ -41,7 +41,7 @@ export const Footer: React.FC = () => {
                     <a href="https://www.instagram.com/fuicomacara/" target="_blank" rel="noopener noreferrer">
                         <FaInstagram size={30} className='text-white hover:scale-110 transform transition-transform duration-200' />
                     </a>
-                    <a href="https://www.linkedin.com/company/cjr-unb/posts/?feedView=all" target="_blank" rel="noopener noreferrer">
+                    <a href="https://www.linkedin.com/in/fui-com-a-cara-undefined-b0988b374/" target="_blank" rel="noopener noreferrer">
                         <FaLinkedin size={30} className='text-white hover:scale-110 transform transition-transform duration-200' />
                     </a>
                 </div>

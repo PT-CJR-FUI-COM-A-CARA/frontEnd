@@ -68,7 +68,7 @@ const ContactInfo = () => {
       title: 'LINKEDIN',
       description: 'Nosso linkedin para mais atualizações sobre o projeto',
       info: '@',
-      link: 'https://www.instagram.com/fuicomacara/',
+      link: 'https://www.linkedin.com/in/fui-com-a-cara-undefined-b0988b374/',
     },
     {
       icon: FaEnvelope,
