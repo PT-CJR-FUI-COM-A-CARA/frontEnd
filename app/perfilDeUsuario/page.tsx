@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import NavBar from "../components/navbar/NavBar";
 import PostCard from "../components/post_card/PostCard";
 import { getOneUser, getAvaliacoesByUser, getOneProf, profileImageLoader } from "../utils/api";
-import { FaArrowLeft } from "react-icons/fa";
+import { FaArrowLeft, FaEnvelope, FaBuilding } from "react-icons/fa";
 import ModalEditarPerfil from "../components/m_editar_perfil/M_Editar_Perfil";
 
 const PerfilDeUsuario = () => {
@@ -114,11 +114,13 @@ const PerfilDeUsuario = () => {
                 <h2 className="text-2xl font-semibold text-[#222E50] mb-2">
                   {usuario?.nome ?? "Nome não informado"}
                 </h2>
-                <p className="text-[#222E50] mb-1 text-sm">
-                  {usuario?.curso ?? "Curso não informado"}
+                <p className="text-[#222E50] flex items-center justify-center md:justify-start text-sm">
+                  <FaBuilding className="mr-2 text-base" />
+                  {usuario?.curso ?? "Curso não informado"}/{usuario?.departamento ?? "Departamento não informado"}
                 </p>
-                <p className="text-[#222E50] mb-1 text-sm">
-                  {usuario?.departamento ?? "Departamento não informado"}
+                <p className="text-[#222E50] flex items-center justify-center md:justify-start text-sm">
+                  <FaEnvelope className="mr-2 text-base" />
+                  {usuario?.email ?? "Email não informado"}
                 </p>
 
                 <hr className="my-6 border-[#595652]" />

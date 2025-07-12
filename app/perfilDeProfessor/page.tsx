@@ -104,7 +104,7 @@ const PerfilDeProfessor = () => {
                   {professor?.nome ?? "Nome não informado"}
                 </h2>
 
-                <p className="text-[#222E50] mb-1 flex items-center justify-center md:justify-start text-sm">
+                <p className="text-[#222E50] flex items-center justify-center md:justify-start text-sm">
                   <FaBuilding className="mr-2 text-base" />
                   {professor?.departamento ?? "Departamento não informado"}
                 </p>

@@ -9,7 +9,7 @@ import MeditAvaliacao from "../m_editar_avaliacao/M_Editar_Avaliacao";
 
 interface PostCardProps {
   id: number;
-  userId: number;
+  userId: number;        // <-- ID do autor do comentário
   userName: string;
   userImage: string;
   postDate: string;
@@ -21,7 +21,7 @@ interface PostCardProps {
 
 const PostCard: React.FC<PostCardProps> = ({
   id,
-  userId,
+  userId,    
   userName,
   userImage,
   postDate,
@@ -41,7 +41,7 @@ const PostCard: React.FC<PostCardProps> = ({
       try {
         const decoded: { sub?: string } = jwtDecode(token);
         if (decoded.sub) {
-          setCurrentUserId(Number(decoded.sub));
+          setCurrentUserId(Number(decoded.sub)); // <-- usuário logado
         }
       } catch (error) {
         console.error("Erro ao decodificar token:", error);
@@ -57,7 +57,6 @@ const PostCard: React.FC<PostCardProps> = ({
 
   const canEditOrDelete = currentUserId === userId;
 
-
   const handleEditModalClose = () => {
     setIsEditModalOpen(false);
     if (onAction) {
@@ -66,7 +65,7 @@ const PostCard: React.FC<PostCardProps> = ({
   };
 
   const handleDelete = async () => {
-    if (window.confirm("Tem a certeza que deseja excluir esta avaliação?")) {
+    if (window.confirm("Tem certeza que deseja excluir esta avaliação?")) {
       await deleteAvaliacao(id);
       if (onAction) {
         onAction(); 
