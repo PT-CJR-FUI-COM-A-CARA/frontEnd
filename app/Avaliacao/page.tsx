@@ -16,6 +16,7 @@ import {
   deleteAvaliacao,
   profileImageLoader,
 } from "@/app/utils/api";
+import MeditAvaliacao from "../components/m_editar_avaliacao/M_Editar_Avaliacao";
 
 // --- Componente para o Card de Comentário ---
 const CommentCard = ({ comment, onAction }: { comment: any, onAction: () => void }) => {
@@ -87,6 +88,13 @@ const PaginaAvaliacao = () => {
   
   const isOwnerOfAvaliacao = avaliacao ? currentUserId === avaliacao.userId : false;
 
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  const handleEditSuccess = () => {
+    setIsEditModalOpen(false); // Fecha o modal
+    fetchDados(); // Chama a sua função existente para recarregar os dados da página
+  };
+
   const fetchDados = async () => {
     if (!avaliacaoId) { setLoading(false); return; }
     try {
@@ -135,7 +143,7 @@ const PaginaAvaliacao = () => {
 
     return (
     <>
-        <NavBar />
+        
         <div className="bg-[#EDEDED] min-h-screen">
             <div className="w-full max-w-2xl mx-auto relative px-4">
           
@@ -171,7 +179,7 @@ const PaginaAvaliacao = () => {
                     </div>
                   {isOwnerOfAvaliacao && (
                         <div className="flex gap-4 text-gray-600">
-                            <button title="Editar"><FaEdit className="text-lg hover:text-blue-600" /></button>
+                            <button onClick={() => setIsEditModalOpen(true)} title="Editar"><FaEdit className="text-lg hover:text-blue-600" /></button>
                             <button onClick={handleDeletarAvaliacao} title="Excluir"><FaTrash className="text-lg hover:text-red-600" /></button>
                         </div>
                     )}
@@ -198,6 +206,14 @@ const PaginaAvaliacao = () => {
             </div>
         </div>
     </div>
+    {isEditModalOpen && (
+        <MeditAvaliacao
+          isOpen={isEditModalOpen}
+          onCloseAction={handleEditSuccess}
+          avaliacaoId={avaliacao.id}
+          avaliacaoAtual={avaliacao.avaliacao}
+        />
+    )}
     </>
   );;
 };
