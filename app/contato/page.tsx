@@ -22,7 +22,7 @@ const ContactBanner = () => {
   );
 };
 
-const ContactCard = ({ icon: Icon, title, description, info }) => {
+const ContactCard = ({ icon: Icon, title, description, info, link }) => {
   return (
     <div className="bg-white p-8 rounded-lg shadow-xl hover:shadow-2xl transition duration-300 ease-in-out transform hover:-translate-y-2 flex flex-col items-center text-center max-w-sm mx-auto">
       <div className="text-6xl text-[#050036] mb-6">
@@ -34,12 +34,24 @@ const ContactCard = ({ icon: Icon, title, description, info }) => {
       <p className="text-gray-600 mb-6 px-4">
         {description}
       </p>
-      <p className="text-[#050036] font-semibold text-lg">
-        {info}
-      </p>
+      {link ? (
+        <a
+          href={link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[#050036] font-semibold text-lg hover:underline"
+        >
+          {info}
+        </a>
+      ) : (
+        <p className="text-[#050036] font-semibold text-lg">
+          {info}
+        </p>
+      )}
     </div>
   );
 };
+
 
 
 const ContactInfo = () => {
@@ -49,18 +61,20 @@ const ContactInfo = () => {
       title: 'INSTAGRAM',
       description: 'Siga nosso intagram para receber atualizações sobre o projeto!',
       info: '@fuicomacara',
+      link: 'https://www.instagram.com/fuicomacara/',
     },
     {
       icon: FaLinkedin,
       title: 'LINKEDIN',
       description: 'Nosso linkedin para mais atualizações sobre o projeto',
       info: '@',
+      link: 'https://www.instagram.com/fuicomacara/',
     },
     {
       icon: FaEnvelope,
       title: 'EMAIL',
       description: 'Aqui está nosso email para contato',
-      info: 'fuicomacara@gmail.com',
+      info: 'fuicomacaraa@gmail.com',
     },
   ];
 
@@ -74,6 +88,7 @@ const ContactInfo = () => {
             title={item.title}
             description={item.description}
             info={item.info}
+            link={item.link}
           />
         ))}
       </div>

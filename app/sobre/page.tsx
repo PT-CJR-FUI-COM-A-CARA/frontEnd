@@ -88,25 +88,25 @@ export default function AboutPage() {
             image="../fotoEquipe/joaoMoreira.jpeg"
             name="João Moreira"
             text="Desenvolvedor Full Stack apaixonado por criar soluções eficientes. Cuida do backend e integrações."
-            githubUrl="https://github.com/joaofmoreiraa" // Adicione o link do GitHub aqui
+            githubUrl="https://github.com/joaofmoreiraa" 
           />
           <DevCard
             image="../fotoEquipe/johnnSalles.jpeg"
             name="Johnnatan Salles"
             text="Especialista em frontend e design, criando experiências visuais únicas para os usuários."
-            githubUrl="https://github.com/jsalless" // Adicione o link do GitHub aqui
+            githubUrl="https://github.com/jsalless" 
           />
           <DevCard
             image="../fotoEquipe/pedroIan.jpeg"
             name="Pedro Ian"
             text="Responsável pela infraestrutura, banco de dados e segurança do sistema."
-            githubUrl="https://github.com/pedroiaan" // Adicione o link do GitHub aqui
+            githubUrl="https://github.com/pedroiaan" 
           />
           <DevCard
             image="../fotoEquipe/heyttorAugusto.jpeg"
             name="Heyttor Augusto"
             text="Focada em UX/UI, garantindo que o site seja acessível, intuitivo e atrativo para todos."
-            githubUrl="https://github.com/H3ytt0r62" // Adicione o link do GitHub aqui
+            githubUrl="https://github.com/H3ytt0r62" 
           />
         </div>
       </section>

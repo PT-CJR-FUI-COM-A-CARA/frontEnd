@@ -38,7 +38,7 @@ export const Footer: React.FC = () => {
                 </div>
 
                 <div className='flex space-x-4 mt-4 md:mt-0'>
-                    <a href="https://www.instagram.com/cjr.unb/" target="_blank" rel="noopener noreferrer">
+                    <a href="https://www.instagram.com/fuicomacara/" target="_blank" rel="noopener noreferrer">
                         <FaInstagram size={30} className='text-white hover:scale-110 transform transition-transform duration-200' />
                     </a>
                     <a href="https://www.linkedin.com/company/cjr-unb/posts/?feedView=all" target="_blank" rel="noopener noreferrer">
