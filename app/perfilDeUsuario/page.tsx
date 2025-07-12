@@ -73,7 +73,6 @@ const PerfilDeUsuario = () => {
       <NavBar usuario={usuario}/>
       <div className="flex bg-[#EDEDED] min-h-[calc(100vh-60px)] pt-10 pb-10 px-4">
         <div className="w-full max-w-2xl mx-auto relative">
-          {/* Botão de voltar */}
           <button
             onClick={() => router.back()}
             className="absolute top-8 left-0 md:left-[-60px] w-10 h-10 md:w-12 md:h-12 rounded-full bg-white border flex items-center justify-center shadow-md hover:bg-gray-200 transition"
@@ -83,12 +82,9 @@ const PerfilDeUsuario = () => {
           </button>
 
           <div className="relative">
-            {/* Fundo amarelo */}
             <div className="bg-yellow-100 h-32 rounded-t-lg"></div>
 
-            {/* Card branco com conteúdo */}
             <div className="bg-white rounded-b-lg shadow-md px-4 sm:px-6 pb-6 pt-1 -mt-8 relative z-10">
-              {/* Foto e botões */}
               <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                 <img
                   src={profileImageLoader({ src: usuario?.fotosrc })}
@@ -103,13 +99,8 @@ const PerfilDeUsuario = () => {
                   >
                     Editar Perfil
                   </button>
-                  {/* <button className="bg-red-500 text-white text-sm px-5 py-2 rounded-full hover:scale-105 transition">
-                    Excluir Perfil
-                  </button> */}
                 </div>
               </div>
-
-              {/* Dados do usuário */}
               <div className="pt-4 text-center md:text-left">
                 <h2 className="text-2xl font-semibold text-[#222E50] mb-2">
                   {usuario?.nome ?? "Nome não informado"}
