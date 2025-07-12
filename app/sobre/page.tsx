@@ -1,33 +1,110 @@
 "use client";
 import React from "react";
 import { FaPaintBrush, FaRocket, FaLightbulb, FaGem } from "react-icons/fa";
-import  Botao_Branco  from "@/app/components/botao_branco/Botao_branco"; 
 
 export default function AboutPage() {
   return (
-    <div className="bg-[#EDEDED] text-gray-200 font-sans">
+    <div className="bg-[#EDEDED] text-gray-800 font-sans"> 
       <section
         className="relative flex flex-col items-center justify-center text-center py-32 px-4 bg-cover bg-top bg-no-repeat"
         style={{ backgroundImage: "url('/fotoEquipe/fotoEquipe.jpeg')" }}
       >
         <div className="absolute inset-0 bg-[#050036]/60"></div>
-
         <div className="relative z-10">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">Fui Com a Cara</h1>
+          <img 
+              src="../logo/Logomarca 3.svg"
+              alt="Logo Fui Com a Cara" 
+              className="max-w-xs md:max-w-sm lg:max-w-md h-auto" 
+            />
         </div>
       </section>
 
-      {/* Serviços rápidos */}
       <section className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-6xl mx-auto py-16 px-6">
-        <ServiceCard icon={<FaPaintBrush />} title="Identidade Visual" text="Nossa identidade visual é única, de tal forma a gerar uma aproximação do usuário com a marca"/>
-        <ServiceCard icon={<FaLightbulb />} title="Inovação" text="Temos como objetivo a criação de uma plataforma de fácil acesso para o usuário ver as avaliações de um professor"/>
-        <ServiceCard icon={<FaRocket />} title="Trabalho Estratégico" text="Dividimos nossas tarefas estrategicamente para cada dev implementar mais funcionalidades para o site"/>
-        <ServiceCard icon={<FaGem />} title="Hard Skills" text="Utilizamos desse projeto para aprimoramento das nossas habilidades de programação"/>
+        <ServiceCard
+          icon={<FaPaintBrush />}
+          title="Identidade Visual"
+          text="Nossa identidade visual é única, aproximando o usuário da marca."
+        />
+        <ServiceCard
+          icon={<FaLightbulb />}
+          title="Inovação"
+          text="Criamos uma plataforma intuitiva para que os usuários avaliem professores facilmente."
+        />
+        <ServiceCard
+          icon={<FaRocket />}
+          title="Trabalho Estratégico"
+          text="Dividimos tarefas de forma estratégica para evoluir o site continuamente."
+        />
+        <ServiceCard
+          icon={<FaGem />}
+          title="Hard Skills"
+          text="Aproveitamos o projeto para aprimorar nossas habilidades técnicas."
+        />
       </section>
 
-      {/* About us */}
+      <section className="bg-[#EDEDED] py-10 px-6 text-center">
+        <h2 className="text-3xl md:text-4xl font-bold mb-10 text-[#050036]">Sobre o Site</h2>
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-center gap-8">
+          <div className="w-full md:w-1/2 flex justify-center">
+            <img 
+              src="../logo/jacareCarrossel.png"
+              alt="Jacaré Carrossel" 
+              className="max-w-xs md:max-w-sm lg:max-w-md h-auto" 
+            />
+          </div>
+          <div className="w-full md:w-1/2">
+            <AboutCard
+              title="Uma plataforma feita para você"
+              text="O Fui Com a Cara nasceu com o objetivo de oferecer aos alunos um espaço seguro e transparente para avaliar professores e compartilhar suas experiências. Nossa missão é ajudar estudantes a tomar decisões mais conscientes e também dar um retorno construtivo para os docentes."
+            />
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-[#EDEDED] py-10 px-6 text-center">
+        <h2 className="text-3xl md:text-4xl font-bold mb-10 text-[#050036]">Nossa História</h2>
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-center gap-8">
+          <div className="w-full md:w-1/2">
+            <AboutCard
+              title="Um pouco de nós"
+              text="O projeto foi feito no processo trainee da empresa júnior de Ciência da Computação da Universidade de Brasília: CJR. Durante esse processo, tivemos a oportunidade de aprender na prática, desenvolvendo desde o planejamento até a implementação final do site. Trabalhamos em equipe, enfrentando desafios reais e evoluindo nossas habilidades técnicas e de colaboração.
+              Cada linha de código e cada decisão de design foram construídas com muito cuidado, buscando criar um site visualmente acolhedor e de fácil utilização. Para nós, este site não é apenas um produto final, mas também um símbolo de aprendizado, crescimento e dedicação."
+            />
+          </div>
+          <div className="w-full md:w-1/2 flex justify-center">
+            <img 
+              src="../logo/jacareCarrossel.png"
+              alt="Jacaré Carrossel" 
+              className="max-w-xs md:max-w-sm lg:max-w-md h-auto" 
+            />
+          </div>
+        </div>
+      </section>
+
       <section className="bg-[#050036] py-20 px-6 text-center">
-        
+        <h2 className="text-3xl md:text-4xl font-bold mb-10 text-white">Sobre os Desenvolvedores</h2> 
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-6xl mx-auto">
+          <DevCard
+            image="../fotoEquipe/joaoMoreira.jpeg"
+            name="João Moreira"
+            text="Desenvolvedor Full Stack apaixonado por criar soluções eficientes. Cuida do backend e integrações."
+          />
+          <DevCard
+            image="../fotoEquipe/johnnSalles.jpeg"
+            name="Johnnatan Salles"
+            text="Especialista em frontend e design, criando experiências visuais únicas para os usuários."
+          />
+          <DevCard
+            image="../fotoEquipe/pedroIan.jpeg"
+            name="Pedro Ian"
+            text="Responsável pela infraestrutura, banco de dados e segurança do sistema."
+          />
+          <DevCard
+            image="../fotoEquipe/heyttorAugusto.jpeg"
+            name="Heyttor Augusto"
+            text="Focada em UX/UI, garantindo que o site seja acessível, intuitivo e atrativo para todos."
+          />
+        </div>
       </section>
     </div>
   );
@@ -35,22 +112,31 @@ export default function AboutPage() {
 
 function ServiceCard({ icon, title, text }) {
   return (
-    <div className="bg-[#050036] p-6 rounded-lg text-center hover:bg-purple-600 hover:text-white transition-colors duration-300">
-      <div className="text-3xl mb-4">{icon}</div>
-      <h3 className="text-lg font-semibold">{title}</h3>
+    <div className="bg-[#1a1a33] p-6 rounded-lg text-center hover:bg-[#050036] hover:text-white transition-colors duration-300">
+      <div className="text-3xl mb-4 text-white">{icon}</div> {/* Added text-white for icons */}
+      <h3 className="text-lg font-semibold text-white">{title}</h3> {/* Added text-white */}
       <p className="text-gray-400 mt-2 text-sm">{text}</p>
     </div>
   );
 }
 
-
-function AboutCard({ title }) {
+function AboutCard({ title, text }) {
   return (
-    <div className="bg-[#0f0f1c] p-6 rounded-lg text-left hover:bg-purple-600 hover:text-white transition-colors duration-300">
-      <h3 className="text-xl font-semibold mb-2">{title}</h3>
-      <p className="text-gray-400 text-sm">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus laoreet nec nunc et fringilla.
-      </p>
+    <div className="bg-[#f0e6c7] p-8 rounded-xl text-left shadow-lg text-[#050036]"> {/* Adjusted background color, padding, rounded corners, shadow, and text color */}
+      <h3 className="text-2xl font-bold mb-4">{title}</h3> {/* Increased title size and weight */}
+      <p className="text-lg leading-relaxed">{text}</p> {/* Increased text size and line height */}
+    </div>
+  );
+}
+
+function DevCard({ image, name, text }) {
+  return (
+    <div className="bg-[#1a1a33] rounded-lg overflow-hidden hover:bg-[#394668] hover:text-white transition-colors duration-300">
+      <img src={image} alt={name} className="w-full h-48 object-cover" />
+      <div className="p-6 text-left">
+        <h3 className="text-xl font-semibold mb-2 text-white">{name}</h3> {/* Added text-white */}
+        <p className="text-gray-400 text-sm">{text}</p>
+      </div>
     </div>
   );
 }
