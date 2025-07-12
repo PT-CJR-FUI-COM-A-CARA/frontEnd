@@ -70,7 +70,7 @@ const PerfilDeUsuario = () => {
   if (loading) {
     return (
       <>
-        <NavBar/>
+        
         <div className="text-center py-10">Carregando perfil...</div>
       </>
     );
@@ -78,7 +78,7 @@ const PerfilDeUsuario = () => {
 
   return (
     <>
-      <NavBar/>
+      
       <div className="flex bg-[#EDEDED] min-h-[calc(100vh-60px)] pt-10 pb-10 px-4">
         <div className="w-full max-w-2xl mx-auto relative">
           <button
