@@ -20,19 +20,26 @@ const Home = () => {
   const [professores, setProfessores] = useState<Professor[]>([]);
   const [ordenacao, setOrdenacao] = useState<'nome' | 'departamento' | 'recentes' | 'antigas'>('recentes');
   const [filtro, setFiltro] = useState<Professor[]>([]);
+  
+  const fetchProfessores = async () => {
+    console.log("Página Home: A função fetchProfessores foi chamada!");
+    try {
+      const data = await getAllProf();
+      setProfessores(data);
+      setFiltro(data); 
+    } catch (error) {
+      console.error("Erro ao buscar professores:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchProfessores = async () => {
-      try {
-        const data = await getAllProf();
-        setProfessores(data);
-        setFiltro(data);
-      } catch (error) {
-        console.error("Erro ao buscar professores:", error);
-      }
-    };
-
+    console.log("Página Home: Configurando o 'ouvinte' para o evento professorCreated.");
     fetchProfessores();
+    window.addEventListener('professorCreated', fetchProfessores);
+
+    return () => {
+      window.removeEventListener('professorCreated', fetchProfessores);
+    };
   }, []);
 
   const professoresRecentes = professores.slice(-8);

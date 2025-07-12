@@ -177,3 +177,14 @@ export const profileImageLoader = ({ src }: { src?: string | null }): string => 
 
   return defaultImage;
 };
+
+export const createProfessor = async (data: FormData, isFormData = true) => {
+  if (isFormData) {
+    return api.post('/professores', data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  }
+  return api.post('/professores', data);
+};

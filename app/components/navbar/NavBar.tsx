@@ -7,6 +7,8 @@ import { getOneUser, countNaoLidas, profileImageLoader } from '@/app/utils/api';
 import MenuModal from '../menu_modal/MenuModal';
 import PopUp from '../popup/PopUp';
 import { Notificacao_G } from '../Notificacão/Caixa_grande';
+import { GiTeacher } from 'react-icons/gi'; 
+import { Criaprof } from '../M_CriarProfessor/Criaprof';
 
 interface NavBarProps {
   usuario?: any; 
@@ -21,6 +23,8 @@ export default function NavBar({ usuario: usuarioProp }: NavBarProps) {
   const [isPopUpOpen, setIsPopUpOpen] = useState(false);
   const [notificacaoModalOpen, setNotificacaoModalOpen] = useState(false);
   const [notificacoesNaoLidas, setNotificacoesNaoLidas] = useState<number>(0);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdminModalOpen, setIsAdminModalOpen] = useState(false)
 
   const notificacaoRef = useRef<HTMLDivElement>(null);
 
@@ -39,10 +43,11 @@ export default function NavBar({ usuario: usuarioProp }: NavBarProps) {
       if (token) {
         setIsLoggedIn(true);
         try {
-          const decoded: { sub?: string } = jwtDecode(token);
+          const decoded: { sub?: string, isAdmin?: boolean } = jwtDecode(token);
           if (decoded.sub) {
             const id = Number(decoded.sub);
             setUserID(id);
+            setIsAdmin(decoded.isAdmin || false);
 
             getOneUser(id)
               .then(user => setUserPhoto(user.fotosrc ?? null))
@@ -85,6 +90,7 @@ export default function NavBar({ usuario: usuarioProp }: NavBarProps) {
   const handleLogout = () => {
     localStorage.removeItem('token');
     setIsLoggedIn(false);
+    setIsAdmin(false);
     router.push('/login');
   };
 
@@ -114,6 +120,18 @@ export default function NavBar({ usuario: usuarioProp }: NavBarProps) {
         {isLoggedIn ? (
           <ul className="flex items-center gap-1"> {/* Diminui o espaço aqui */}
             {/* Mais */}
+            {isAdmin && (
+                <li>
+                  <button
+                    aria-label="Adicionar Professor"
+                    onClick={() => setIsAdminModalOpen(true)}
+                    className="p-2 rounded-full hover:bg-white/10 transition"
+                    title="Adicionar Novo Professor"
+                  >
+                    <GiTeacher className="h-6 w-6" />
+                  </button>
+                </li>
+              )}
             <li>
               <button
                 aria-label="Mais"
@@ -203,6 +221,10 @@ export default function NavBar({ usuario: usuarioProp }: NavBarProps) {
         isOpen={isPopUpOpen}
         title="Avaliação enviada com sucesso!"
         description="Obrigado pela sua contribuição 🎉"
+      />
+      <Criaprof 
+        isOpen={isAdminModalOpen}
+        onClose={() => setIsAdminModalOpen(false)}
       />
     </header>
   );
