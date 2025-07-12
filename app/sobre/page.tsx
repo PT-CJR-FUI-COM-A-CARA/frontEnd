@@ -73,8 +73,8 @@ export default function AboutPage() {
           </div>
           <div className="w-full md:w-1/2 flex justify-center">
             <img
-              src="../logo/jacareCarrossel.png"
-              alt="Jacaré Carrossel"
+              src="../logo/jacareGamer.png"
+              alt="Jacaré Gamer"
               className="max-w-xs md:max-w-sm lg:max-w-md h-auto"
             />
           </div>
