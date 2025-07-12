@@ -5,6 +5,7 @@ import CarrosselProfessores from "./components/carrossel/carrossel";
 import DropdownOrdenar from "./components/ordenar/ordenar";
 import BarraPes from "./components/pesquisa/pesquisa";
 import ProfQuadro from "./components/quadro/Quadro";
+import { Footer } from "./components/footer/footer";
 import { getAllProf } from "./utils/api";
 import Link from "next/link";
 
@@ -113,6 +114,8 @@ const Home = () => {
           </section>
         </>
       )}
+
+      <Footer></Footer>
     </>
   );
 };
