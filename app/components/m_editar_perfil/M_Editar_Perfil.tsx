@@ -4,6 +4,7 @@ import { updateUser, changePassword, uploadPhoto, profileImageLoader, deleteUser
 import { GiKey } from "react-icons/gi";
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/contexts/AuthContext';
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 // Funções de validação (mantidas fora do componente para clareza)
 const validarSenhaSegura = (senha: string) => {
@@ -19,6 +20,7 @@ const validarEmail = (email: string) => {
   return regexFormato.test(email.trim());
 };
 
+
 // Interface das props do componente
 interface ModalEditarPerfilProps {
   usuario: any;
@@ -32,6 +34,9 @@ const ModalEditarPerfil: React.FC<ModalEditarPerfilProps> = ({ usuario, onClose,
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [senhaVisivel, setSenhaVisivel] = useState(false);
+  const [confirmarSenhaVisivel, setConfirmarSenhaVisivel] = useState(false);
+
 
   const [profileData, setProfileData] = useState({
     nome: '',
@@ -255,15 +260,22 @@ const ModalEditarPerfil: React.FC<ModalEditarPerfilProps> = ({ usuario, onClose,
                 <p className="text-gray-600 mb-4">
                   Esta ação é permanente e não pode ser desfeita. Para confirmar, por favor, digite sua senha.
                 </p>
-                <div className="w-full space-y-4">
+                <div className="relative">
                   <input 
-                    type="password" 
+                    type= {senhaVisivel ? "text" : "password"}
                     name="deletePassword" 
                     placeholder="Sua Senha Atual" 
                     value={deletePassword} 
                     onChange={(e) => setDeletePassword(e.target.value)} 
                     className="w-full p-3 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" 
                   />
+                  <button
+                    type="button"
+                    onClick={() => setSenhaVisivel(!senhaVisivel)}
+                    className="absolute right-3 top-3 text-gray-500">
+
+                      {senhaVisivel ? <FaEyeSlash /> : <FaEye />}
+                    </button>
                 </div>
               </div>
               {error && <p className="text-red-500 text-sm text-center mb-4">{error}</p>}
