@@ -1,9 +1,10 @@
 'use client';
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import Botao_Azul from '../botao_azul/Botao_Azul';
 import { IoClose } from 'react-icons/io5';
 import { FaCamera } from 'react-icons/fa';
-import { createProfessor } from '@/app/utils/api';
+import { createProfessor, createNotificacao } from '@/app/utils/api';
+import { jwtDecode } from 'jwt-decode';
 
 interface ModalProfProps {
   isOpen: boolean;
@@ -17,7 +18,23 @@ export const Criaprof = ({ onClose, isOpen }: ModalProfProps) => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [userId, setUserId] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decoded: { sub?: string } = jwtDecode(token);
+        if (decoded.sub) {
+          setUserId(Number(decoded.sub));
+        }
+      } catch (error) {
+        console.error('Erro ao decodificar token:', error);
+      }
+    }
+  }, [isOpen]);
 
   const resetForm = () => {
     setNome('');
@@ -25,12 +42,11 @@ export const Criaprof = ({ onClose, isOpen }: ModalProfProps) => {
     setMaterias('');
     setSelectedImage(null);
     setError('');
-
   };
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
-      setSelectedImage(event.target.files?.[0] || null);
+      setSelectedImage(event.target.files[0] || null);
     }
   };
 
@@ -45,22 +61,34 @@ export const Criaprof = ({ onClose, isOpen }: ModalProfProps) => {
       return;
     }
 
-    const materiasArray = materias.split(',').map(m => m.trim()).filter(m => m);
+    const materiasArray = materias.split(',').map((m) => m.trim()).filter((m) => m);
     setError('');
     setIsLoading(true);
 
     const formData = new FormData();
     formData.append('nome', nome);
     formData.append('departamento', departamento);
-    formData.append('materias', JSON.stringify(materiasArray)); // Envia as matérias como JSON
+    formData.append('materias', JSON.stringify(materiasArray));
     if (selectedImage) {
       formData.append('foto', selectedImage);
     }
 
     try {
-      await createProfessor(formData, true); // O segundo argumento indica que estamos enviando FormData
+      await createProfessor(formData, true);
+      console.log("Professor criado com sucesso!");
+
+      // Se tiver userId, envia notificação
+      if (userId) {
+        await createNotificacao({
+          usersId: userId,
+          texto: `Você criou o professor ${nome}!`,
+          tipo: 'NOVO_PROFESSOR',
+          link: '/professores', 
+        });
+        console.log("Notificação de novo professor enviada!");
+      }
+
       alert('Professor criado com sucesso!');
-      console.log("Modal: Disparando o evento 'professorCreated'!");
       window.dispatchEvent(new CustomEvent('professorCreated'));
       resetForm();
       onClose();
@@ -72,6 +100,7 @@ export const Criaprof = ({ onClose, isOpen }: ModalProfProps) => {
       setIsLoading(false);
     }
   };
+
   const handleClose = () => {
     resetForm();
     onClose();
@@ -121,9 +150,7 @@ export const Criaprof = ({ onClose, isOpen }: ModalProfProps) => {
         {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
         <div className='flex items-center justify-center mt-2'>
-          <Botao_Azul type="submit">
-            Criar
-          </Botao_Azul>
+          <Botao_Azul type="submit">Criar</Botao_Azul>
         </div>
       </form>
     </div>
