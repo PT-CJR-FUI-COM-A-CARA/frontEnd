@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import Botao_Branco from '../botao_branco/Botao_branco';
 import { jwtDecode } from 'jwt-decode';
 import { countNaoLidas, getOneUser, profileImageLoader } from '@/app/utils/api';
@@ -23,6 +23,7 @@ export default function NavBar() {
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false)
   const [userID, setUserID] = useState<number | null>(null);
   const [userPhoto, setUserPhoto] = useState<string | null>(null);
+  const pathname = usePathname();
 
   const notificacaoRef = useRef<HTMLDivElement>(null);
 
@@ -99,6 +100,9 @@ export default function NavBar() {
 
   if (isLoading) {
     return <div className="bg-[#050036] h-16" />; 
+  }
+  if (pathname === '/login' || pathname === '/cadastro') {
+    return null;
   }
 
   return (
